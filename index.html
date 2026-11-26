@@ -312,6 +312,7 @@
         }
         body.dark {
             color-scheme: dark;
+            color: var(--ink);
             --page: #0b1120;
             --surface: #1e293b;
             --surface-muted: #172235;
@@ -325,8 +326,14 @@
         body.dark .bg-white { background-color: #1e293b !important; }
         body.dark .bg-slate-50, body.dark .bg-slate-100 { background-color: #172235 !important; }
         body.dark .text-slate-800, body.dark .text-slate-700, body.dark .text-slate-600 { color: #dbe5f1 !important; }
+        body.dark .text-slate-500 { color: #a8b4c5 !important; }
         body.dark .text-slate-900, body.dark .text-\[\#0F2C59\] { color: #d8e6ff !important; }
         body.dark .text-navy-900 { color: #d8e6ff !important; }
+        body.dark .filter-button.active {
+            color: #f8fafc !important;
+            background: #1e3a5f !important;
+            border-color: #365982 !important;
+        }
         body.dark .border-slate-100, body.dark .border-slate-200, body.dark .border-slate-300 { border-color: #334155 !important; }
         body.dark .bg-blue-50\/70 { background-color: #1b3554 !important; }
         body.dark .bg-amber-50, body.dark .bg-amber-50\/90 { background-color: #3b3320 !important; }
@@ -628,6 +635,36 @@
         body.dark .bg-white { background-color: #151e2e !important; }
         body.dark .bg-slate-50, body.dark .bg-slate-100 { background-color: #111a29 !important; }
         body.dark .sidebar { background: #0d1728; }
+        body.dark.document-reading #module-context .course-heading {
+            color: #e2e8f0;
+            background: #151e2e;
+            border-color: #334155;
+        }
+        body.dark.document-reading #module-context .course-heading p {
+            color: #cbd5e1 !important;
+        }
+        body.dark.document-reading #module-context .course-heading h2 {
+            color: #f8fafc !important;
+        }
+        body.dark.document-reading #module-placeholder > .panel-card {
+            color: #e2e8f0;
+            background: #0b1120;
+        }
+        body.dark.document-reading #module-placeholder > .panel-card > p:first-child {
+            color: #cbd5e1 !important;
+        }
+        body.dark.document-reading .document-preview-host {
+            color: #e2e8f0;
+            background: #0b1120;
+        }
+        body.dark.document-reading .document-preview-host .docx-wrapper > section {
+            color: #e2e8f0 !important;
+            background: #0b1120 !important;
+        }
+        body.dark.document-reading .document-preview-host .docx-wrapper * {
+            color: #e2e8f0 !important;
+            background-color: transparent !important;
+        }
         @media (min-width: 431px) {
             body { background: #e9edf3; }
             #app-shell, .workspace { width: 430px; }

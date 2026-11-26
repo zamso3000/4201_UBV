@@ -1,0 +1,2453 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sistema Educativo Web | Aula Virtual UBV</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Merriweather y Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        window.handleInfographicError = function (imgEl) {
+            if (!imgEl.dataset.triedGithub && imgEl.dataset.githubSrc) {
+                imgEl.dataset.triedGithub = 'true';
+                imgEl.src = imgEl.dataset.githubSrc;
+                return;
+            }
+            imgEl.classList.add('hidden');
+            const fallback = document.getElementById('github-infographic-fallback');
+            if (fallback) fallback.classList.remove('hidden');
+        };
+        window.handleInfographicModalError = function (imgEl) {
+            if (!imgEl.dataset.triedGithub && imgEl.dataset.githubSrc) {
+                imgEl.dataset.triedGithub = 'true';
+                imgEl.src = imgEl.dataset.githubSrc;
+                return;
+            }
+            imgEl.alt = 'Infografía no disponible en ruta directa; revise la síntesis estructurada debajo.';
+        };
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['Merriweather', 'Georgia', 'serif'],
+                        sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        navy: {
+                            950: '#080e1d',
+                            900: '#0F172A',
+                            800: '#1E293B',
+                            700: '#334155',
+                        },
+                        gold: {
+                            500: '#D97706',
+                            600: '#B45309',
+                            100: '#FEF3C7',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Evitar desbordamiento horizontal y mejorar sensación táctil móvil */
+        html, body {
+            max-width: 100%;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+            background-color: #cbd5e1;
+        }
+        @media (max-width: 440px) {
+            html, body {
+                background-color: #f8fafc;
+            }
+        }
+
+        /* Escala de fuente accesible para lectura en teléfono */
+        body.large-font {
+            font-size: 17px;
+        }
+        body.large-font .mobile-text {
+            font-size: 0.98rem !important;
+            line-height: 1.55 !important;
+        }
+        body.large-font .mobile-title {
+            font-size: 1.25rem !important;
+        }
+
+        /* Animación suave de cambio de pestaña */
+        .tab-panel {
+            animation: slideUp 0.25s ease-out;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Ocultar scrollbar manteniendo desplazamiento */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        :root {
+            color-scheme: light;
+            --page: #f4f6f9;
+            --surface: #ffffff;
+            --surface-muted: #f8fafc;
+            --ink: #1e293b;
+            --muted: #64748b;
+            --line: #e2e8f0;
+            --navy: #0f2c59;
+            --accent: #8b1e3f;
+            --gold: #d4af37;
+        }
+        body {
+            background: var(--page);
+            color: var(--ink);
+            min-height: 100vh;
+        }
+        #app-shell {
+            max-width: none;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            border: 0;
+            background: var(--page);
+            box-shadow: none;
+        }
+        .app-header {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            min-height: 76px;
+            padding: 12px 24px;
+            background: var(--surface);
+            color: var(--ink);
+            border-bottom: 1px solid var(--line);
+            box-shadow: 0 2px 12px rgba(15, 23, 42, .05);
+        }
+        .header-inner {
+            max-width: 1440px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        .workspace {
+            max-width: 1440px;
+            margin: 0 auto;
+            width: 100%;
+            display: flex;
+            align-items: flex-start;
+            min-height: calc(100vh - 76px);
+        }
+        .sidebar {
+            width: 280px;
+            flex: 0 0 280px;
+            padding: 24px 16px;
+            border-right: 1px solid var(--line);
+            background: var(--surface);
+            min-height: calc(100vh - 76px);
+            position: sticky;
+            top: 76px;
+            height: calc(100vh - 76px);
+            overflow-y: auto;
+        }
+        .main-column { min-width: 0; flex: 1; }
+        .content-main {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 30px clamp(16px, 3vw, 42px) 48px;
+        }
+        .course-heading, .resource-card, .panel-card {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, .035);
+        }
+        .resource-card {
+            text-align: left;
+            padding: 18px;
+            transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+        }
+        .resource-card:hover {
+            transform: translateY(-2px);
+            border-color: #9aacc5;
+            box-shadow: 0 8px 24px rgba(15, 44, 89, .09);
+        }
+        .unit-button, .module-button {
+            width: 100%;
+            text-align: left;
+            border-radius: 12px;
+            padding: 10px 12px;
+            color: var(--muted);
+            transition: .15s ease;
+        }
+        .unit-button:hover, .module-button:hover { background: var(--surface-muted); color: var(--navy); }
+        .unit-button.active, .module-button.active {
+            background: #eaf0f8;
+            color: var(--navy);
+            font-weight: 800;
+        }
+        .mobile-sidebar-backdrop { display: none; }
+        .theme-toggle, .menu-toggle {
+            min-width: 42px;
+            height: 42px;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: var(--surface);
+            color: var(--ink);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .course-actions button, .filter-button { cursor: pointer; }
+        .filter-button.active {
+            color: white;
+            background: var(--navy);
+            border-color: var(--navy);
+        }
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 70;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            background: rgba(2, 6, 23, .62);
+        }
+        .modal-card {
+            width: min(100%, 560px);
+            max-height: min(90vh, 760px);
+            overflow-y: auto;
+            border-radius: 20px;
+            background: var(--surface);
+            color: var(--ink);
+            border: 1px solid var(--line);
+            padding: 24px;
+        }
+        .form-field {
+            width: 100%;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            background: var(--surface);
+            color: var(--ink);
+            padding: 10px 12px;
+        }
+        body.dark {
+            color-scheme: dark;
+            --page: #0b1120;
+            --surface: #1e293b;
+            --surface-muted: #172235;
+            --ink: #f8fafc;
+            --muted: #a8b4c5;
+            --line: #334155;
+            --navy: #9bb9e7;
+            --accent: #d27691;
+            --gold: #e3c85c;
+        }
+        body.dark .bg-white { background-color: #1e293b !important; }
+        body.dark .bg-slate-50, body.dark .bg-slate-100 { background-color: #172235 !important; }
+        body.dark .text-slate-800, body.dark .text-slate-700, body.dark .text-slate-600 { color: #dbe5f1 !important; }
+        body.dark .text-slate-900, body.dark .text-\[\#0F2C59\] { color: #d8e6ff !important; }
+        body.dark .text-navy-900 { color: #d8e6ff !important; }
+        body.dark .border-slate-100, body.dark .border-slate-200, body.dark .border-slate-300 { border-color: #334155 !important; }
+        body.dark .bg-blue-50\/70 { background-color: #1b3554 !important; }
+        body.dark .bg-amber-50, body.dark .bg-amber-50\/90 { background-color: #3b3320 !important; }
+        body.dark .text-amber-900, body.dark .text-amber-950 { color: #f5df98 !important; }
+        body.dark .text-amber-800 { color: #f0d47a !important; }
+        body.dark .bg-red-50 { background-color: #432532 !important; }
+        @media (max-width: 800px) {
+            .app-header { padding: 10px 14px; }
+            .header-inner { gap: 6px; }
+            .header-inner > div:first-child { flex: 1 1 0%; min-width: 0; gap: 8px; }
+            .header-inner > div:last-child { flex-shrink: 0; gap: 8px; }
+            .header-inner h1 { white-space: nowrap; font-size: 10px; }
+            .header-inner > div:first-child p { white-space: nowrap; font-size: 8px; }
+            .header-inner time { font-size: 9px; white-space: nowrap; }
+            .clock-label { display: none; }
+            .workspace { display: block; }
+            .sidebar {
+                position: fixed;
+                z-index: 60;
+                top: 0;
+                left: 0;
+                height: 100dvh;
+                min-height: 100dvh;
+                transform: translateX(-105%);
+                transition: transform .2s ease;
+                box-shadow: 12px 0 30px rgba(2, 6, 23, .16);
+            }
+            .sidebar.open { transform: translateX(0); }
+            .mobile-sidebar-backdrop.visible {
+                display: block;
+                position: fixed;
+                z-index: 50;
+                inset: 0;
+                background: rgba(2, 6, 23, .45);
+            }
+            .content-main { padding: 20px 14px 36px; }
+            .old-module-nav { position: fixed !important; left: 0 !important; bottom: 0; width: 100% !important; max-width: none !important; transform: none !important; }
+            body.module-open .content-main { padding-bottom: 96px; }
+        }
+        @media (max-width: 480px) {
+            .header-inner .h-10.w-10 { display: none; }
+        }
+        @media (min-width: 801px) {
+            .menu-toggle { display: none; }
+            .old-module-nav { display: none !important; }
+        }
+
+        html, body {
+            width: 100%;
+            min-height: 100%;
+            background: #e9edf3;
+            overflow-x: hidden;
+            overscroll-behavior-x: none;
+        }
+        body { min-height: 100dvh; }
+        #app-shell {
+            position: relative;
+            width: 100%;
+            max-width: 430px;
+            min-height: 100dvh;
+            margin: 0 auto;
+            overflow: clip;
+            background: var(--page);
+            box-shadow: 0 0 32px rgba(15, 23, 42, .12);
+        }
+        .app-header {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            z-index: 40;
+            width: min(100%, 430px);
+            height: 56px;
+            min-height: 56px;
+            padding: 0 12px;
+            transform: translateX(-50%);
+        }
+        .header-inner {
+            width: 100%;
+            height: 56px;
+            gap: 8px;
+        }
+        .header-inner > div:first-child { flex: 1 1 auto; min-width: 0; }
+        .header-inner > div:first-child > :not(.menu-toggle):not(#active-course-short) { display: none; }
+        #active-course-short {
+            display: block;
+            max-width: 132px;
+            overflow: hidden;
+            color: var(--navy);
+            font-size: 12px;
+            font-weight: 800;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .header-inner > div:last-child { flex: 0 0 auto; gap: 8px; }
+        .header-inner > div:last-child > div { max-width: 190px; }
+        .header-inner .clock-label { display: none; }
+        #live-clock {
+            display: block;
+            white-space: nowrap;
+            font-size: 11px;
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+        }
+        .theme-toggle {
+            width: 40px;
+            min-width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+        .menu-toggle {
+            display: inline-flex;
+            width: 44px;
+            min-width: 44px;
+            height: 44px;
+            border-radius: 12px;
+        }
+        .workspace {
+            display: block;
+            width: 100%;
+            max-width: 430px;
+            min-height: 100dvh;
+            margin: 0 auto;
+            padding-top: 56px;
+        }
+        .main-column { width: 100%; }
+        .content-main {
+            width: 100%;
+            max-width: none;
+            margin: 0;
+            padding: 12px 14px calc(96px + env(safe-area-inset-bottom));
+        }
+        .sidebar {
+            position: fixed;
+            z-index: 90;
+            top: 0;
+            left: max(0px, calc(50% - 215px));
+            width: min(80vw, 300px);
+            height: 100dvh;
+            min-height: 100dvh;
+            padding: 20px 14px calc(20px + env(safe-area-inset-bottom));
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            color: #f8fafc;
+            background: #0f2c59;
+            border: 0;
+            transform: translateX(calc(-100% - 12px));
+            transition: transform .24s cubic-bezier(.2,.8,.2,1);
+        }
+        .sidebar.open { transform: translateX(0); }
+        .sidebar h2, .sidebar p { color: #f8fafc; }
+        .sidebar .text-slate-500 { color: #cbd5e1 !important; }
+        .sidebar .border-slate-200 { border-color: rgba(226,232,240,.22) !important; }
+        .sidebar .unit-button, .sidebar .module-button {
+            min-height: 48px;
+            color: #e2e8f0;
+        }
+        .sidebar .unit-button:hover, .sidebar .module-button:hover { background: rgba(255,255,255,.1); color: #fff; }
+        .sidebar .unit-button.active, .sidebar .module-button.active {
+            color: #0f2c59;
+            background: #f8fafc;
+        }
+        .mobile-sidebar-backdrop {
+            position: fixed;
+            z-index: 80;
+            inset: 0;
+            display: block;
+            visibility: hidden;
+            opacity: 0;
+            background: rgba(3, 8, 18, .58);
+            transition: opacity .2s ease, visibility .2s ease;
+        }
+        .mobile-sidebar-backdrop.visible { visibility: visible; opacity: 1; }
+        .course-heading, .panel-card { border-radius: 16px; }
+        #course-dashboard { gap: 14px; }
+        #course-dashboard > .course-heading { padding: 16px; }
+        #course-title {
+            margin-top: 7px;
+            font-size: 18px;
+            line-height: 1.3;
+            overflow-wrap: anywhere;
+        }
+        #course-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            margin-top: 8px;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        #course-meta .mx-2 { display: none; }
+        .course-actions { display: block; width: 100%; margin-top: 14px; }
+        .course-actions button {
+            width: 100%;
+            min-height: 48px;
+            justify-content: center;
+        }
+        .filter-button {
+            min-height: 44px;
+            padding: 0 15px;
+            flex: 0 0 auto;
+            white-space: nowrap;
+        }
+        #course-dashboard > .flex.flex-col { display: block; }
+        #course-dashboard [role="group"] {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 8px;
+            max-width: 100%;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+        }
+        #course-dashboard [role="group"]::-webkit-scrollbar { display: none; }
+        #resource-count { display: inline; }
+        #course-dashboard > .flex.flex-col > p { margin-top: 8px; }
+        #resource-list {
+            display: grid !important;
+            grid-template-columns: minmax(0, 1fr) !important;
+            gap: 12px !important;
+        }
+        .resource-card {
+            width: 100%;
+            min-height: 150px;
+            padding: 16px;
+            border-radius: 16px;
+            background: var(--surface);
+            color: var(--ink);
+            box-shadow: 0 2px 8px rgba(15, 23, 42, .045);
+        }
+        #module-content .grid { grid-template-columns: minmax(0, 1fr) !important; }
+        #module-content .tab-panel { padding-bottom: 20px; }
+        .old-module-nav { display: none !important; }
+        .modal-overlay {
+            align-items: flex-end;
+            justify-content: center;
+            padding: 0;
+            padding-top: 24px;
+        }
+        .modal-card {
+            position: relative;
+            width: min(100%, 430px);
+            max-height: min(88dvh, 760px);
+            margin: 0 auto;
+            padding: 22px 16px calc(20px + env(safe-area-inset-bottom));
+            border: 1px solid var(--line);
+            border-bottom: 0;
+            border-radius: 22px 22px 0 0;
+            box-shadow: 0 -12px 40px rgba(2, 6, 23, .22);
+            animation: sheet-enter .22s ease-out;
+        }
+        .modal-card::before {
+            content: "";
+            position: absolute;
+            top: 8px;
+            left: calc(50% - 20px);
+            width: 40px;
+            height: 4px;
+            border-radius: 99px;
+            background: #94a3b8;
+        }
+        @keyframes sheet-enter {
+            from { transform: translateY(28px); opacity: .8; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .form-field { min-height: 48px; font-size: 16px; }
+        textarea.form-field { min-height: 88px; }
+        button, a, input, select, textarea { scroll-margin-block: 72px; }
+        button { min-height: 44px; }
+        .resource-card { min-height: 150px; }
+        .floating-action {
+            position: fixed;
+            z-index: 55;
+            right: max(20px, calc(50% - 215px + 20px));
+            bottom: max(20px, calc(env(safe-area-inset-bottom) + 12px));
+            display: flex;
+            width: 56px;
+            min-width: 56px;
+            height: 56px;
+            align-items: center;
+            justify-content: center;
+            border: 0;
+            border-radius: 50%;
+            color: #fff;
+            background: #8b1e3f;
+            box-shadow: 0 8px 22px rgba(139, 30, 63, .34);
+            font-size: 30px;
+            line-height: 1;
+        }
+        body.dark {
+            background: #090d16;
+            --page: #090d16;
+            --surface: #151e2e;
+            --surface-muted: #111a29;
+            --ink: #f8fafc;
+            --muted: #a8b4c5;
+            --line: #2b384d;
+        }
+        body.dark .bg-white { background-color: #151e2e !important; }
+        body.dark .bg-slate-50, body.dark .bg-slate-100 { background-color: #111a29 !important; }
+        body.dark .sidebar { background: #0d1728; }
+        @media (min-width: 431px) {
+            body { background: #e9edf3; }
+            #app-shell, .workspace { width: 430px; }
+        }
+    </style>
+</head>
+<body class="font-sans text-slate-800 antialiased selection:bg-navy-900 selection:text-white overflow-x-hidden max-w-full">
+
+    <!-- CONTENEDOR PRINCIPAL TIPO SMARTPHONE (MAX 430PX CENTRADO) -->
+    <div id="app-shell" class="w-full min-h-screen flex flex-col overflow-x-hidden box-border">
+
+        <!-- =================================================================
+             HEADER COMPACTO MÓVIL (STICKY TOP)
+        ================================================================== -->
+        <header class="app-header">
+            <div class="header-inner">
+                <div class="flex items-center gap-3 min-w-0">
+                    <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Abrir navegación de unidades" aria-expanded="false" onclick="toggleSidebar()">
+                        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    </button>
+                    <div class="h-10 w-10 rounded-xl bg-[#0F2C59] text-white flex items-center justify-center font-black">A</div>
+                    <div class="min-w-0">
+                        <p class="text-[10px] uppercase tracking-[.16em] font-extrabold text-[#8B1E3F]">Aula Virtual • UBV</p>
+                        <h1 class="font-bold text-sm sm:text-base truncate">Sistema Educativo Web</h1>
+                    </div>
+                    <span id="active-course-short">Delitos Económicos</span>
+                </div>
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <div class="text-right">
+                        <span class="clock-label text-[10px] text-slate-500 block">Fecha y hora local</span>
+                        <time id="live-clock" class="text-xs sm:text-sm font-semibold tabular-nums" aria-live="off"></time>
+                    </div>
+                    <button class="theme-toggle" type="button" id="theme-toggle" aria-label="Activar tema oscuro" aria-pressed="false" title="Cambiar tema" onclick="toggleTheme()">
+                        <svg id="theme-icon" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="mobile-sidebar-backdrop" id="sidebar-backdrop" onclick="toggleSidebar(false)"></div>
+        <div class="workspace">
+        <aside class="sidebar" id="sidebar" aria-label="Navegación de unidades curriculares">
+            <div class="flex items-center justify-between mb-5">
+                <div>
+                    <p class="text-[10px] uppercase tracking-widest font-extrabold text-slate-500">Universidad Bolivariana de Venezuela</p>
+                    <h2 class="font-bold text-sm mt-1">PFG Estudios Jurídicos</h2>
+                    <p class="mt-1 text-[11px] leading-snug text-slate-300">Trayecto 4 · Tramo 2 · Sección 4-2-1 · Turno Nocturno</p>
+                    <p class="mt-1 text-[11px] leading-snug text-slate-300">Sede Chaguaramos · Piso 7 · Aula CH7-D</p>
+                    <p class="mt-4 text-[10px] uppercase tracking-widest font-extrabold text-slate-400">Materia activa</p>
+                    <p id="drawer-active-course" class="mt-2 text-xs font-semibold leading-snug"></p>
+                </div>
+                <button class="menu-toggle" type="button" aria-label="Cerrar navegación" onclick="toggleSidebar(false)">✕</button>
+            </div>
+            <div id="unit-list" class="space-y-1"></div>
+            <div class="mt-8 border-t border-slate-200 pt-5">
+                <p class="text-[10px] uppercase tracking-widest font-extrabold text-slate-500 mb-3">Contenido de la unidad</p>
+                <div id="module-list" class="space-y-1"></div>
+            </div>
+        </aside>
+        <div class="main-column">
+        <!-- =================================================================
+             CONTENIDO PRINCIPAL (VISTAS POR PESTAÑA MÓVIL)
+        ================================================================== -->
+        <main class="content-main">
+            <section id="course-dashboard" class="space-y-5 mb-7">
+                <div class="course-heading p-5 sm:p-7">
+                    <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5">
+                        <div>
+                            <span class="inline-flex items-center gap-2 text-[10px] uppercase tracking-widest font-extrabold text-[#8B1E3F]">
+                                <span class="w-2 h-2 rounded-full bg-[#D4AF37]"></span> Unidad curricular activa
+                            </span>
+                            <h2 id="course-title" class="font-serif text-2xl sm:text-3xl font-black text-[#0F2C59] mt-2">Delitos Económicos en el Ámbito de la Empresa</h2>
+                            <p id="course-meta" class="text-sm text-slate-500 mt-2"><span>Docente: Por asignar</span><span>Horario: Por definir</span></p>
+                        </div>
+                        <div class="course-actions">
+                            <button type="button" onclick="openPendingModal()" aria-haspopup="dialog" class="flex items-center rounded-xl border border-slate-200 font-bold text-sm bg-white hover:bg-slate-50">
+                                Pendientes <span id="pending-count" class="ml-1 inline-flex min-w-5 justify-center rounded-full bg-[#8B1E3F] px-1.5 py-0.5 text-xs text-white">0</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div class="flex flex-wrap gap-2" role="group" aria-label="Filtrar materiales">
+                        <button class="filter-button active rounded-full border border-slate-200 bg-white text-xs font-bold" data-filter="todo" onclick="filterResources('todo', this)">Todo</button>
+                        <button class="filter-button rounded-full border border-slate-200 bg-white text-xs font-bold" data-filter="grabacion" onclick="filterResources('grabacion', this)">Grabaciones</button>
+                        <button class="filter-button rounded-full border border-slate-200 bg-white text-xs font-bold" data-filter="escrito" onclick="filterResources('escrito', this)">Escritos</button>
+                        <button class="filter-button rounded-full border border-slate-200 bg-white text-xs font-bold" data-filter="info" onclick="filterResources('info', this)">Info</button>
+                    </div>
+                    <p class="text-xs text-slate-500"><span id="resource-count">0</span> materiales disponibles</p>
+                </div>
+                <div id="resource-list" class="grid sm:grid-cols-2 xl:grid-cols-3 gap-3"></div>
+            </section>
+            <section id="module-content" class="hidden">
+                <button type="button" onclick="showResourceLibrary()" class="mb-4 text-sm font-bold text-[#0F2C59] hover:underline">← Volver a materiales</button>
+                <div id="module-context" class="mb-4"></div>
+                <div id="module-placeholder" class="hidden"></div>
+
+            <!-- -------------------------------------------------------------
+                 PESTAÑA 1: I. MARCO NORMATIVO Y CONCEPTOS (ACORDEONES)
+            -------------------------------------------------------------- -->
+            <section id="tab-1" class="tab-panel space-y-4">
+                <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+                    <span class="text-[10px] font-extrabold uppercase tracking-widest text-gold-600">Sección I • Fundamentos</span>
+                    <h2 class="font-serif text-lg font-bold text-navy-900 mt-0.5 mobile-title">
+                        Marco Normativo y Conceptos
+                    </h2>
+                    <p class="text-xs text-slate-600 mt-1 leading-relaxed mobile-text">
+                        Eje central entre la <strong>LOCDOFT</strong>, el <strong>Código Penal</strong> y los estándares del <strong>GAFI</strong> en las empresas. Toca cada norma para desplegar:
+                    </p>
+
+                    <!-- Filtros rápidos táctiles -->
+                    <div class="flex space-x-1.5 mt-3 overflow-x-auto no-scrollbar pb-0.5">
+                        <button onclick="filterNorms('all')" id="nf-all" class="norm-filter px-3 py-1.5 rounded-full text-xs font-bold bg-navy-900 text-white shrink-0 cursor-pointer">
+                            Todos (7)
+                        </button>
+                        <button onclick="filterNorms('locdoft')" id="nf-locdoft" class="norm-filter px-3 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 shrink-0 cursor-pointer">
+                            LOCDOFT (5)
+                        </button>
+                        <button onclick="filterNorms('cp')" id="nf-cp" class="norm-filter px-3 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 shrink-0 cursor-pointer">
+                            Código Penal
+                        </button>
+                        <button onclick="filterNorms('gafi')" id="nf-gafi" class="norm-filter px-3 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 shrink-0 cursor-pointer">
+                            GAFI (7 Bloques)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Contenedor de Acordeones Normativos -->
+                <div id="norms-accordion-list" class="space-y-2.5">
+                    <!-- Inyectado dinámicamente vía JS -->
+                </div>
+            </section>
+
+            <!-- -------------------------------------------------------------
+                 PESTAÑA 2: II. EVOLUCIÓN DEL DELITO EN LA EMPRESA
+            -------------------------------------------------------------- -->
+            <section id="tab-2" class="tab-panel hidden space-y-4">
+                <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+                    <span class="text-[10px] font-extrabold uppercase tracking-widest text-gold-600">Sección II • Escalamiento</span>
+                    <h2 class="font-serif text-lg font-bold text-navy-900 mt-0.5 mobile-title">
+                        Evolución del Delito en la Empresa
+                    </h2>
+                    <p class="text-xs text-slate-600 mt-1 leading-relaxed mobile-text">
+                        Un delito económico de alto impacto escala progresivamente aprovechando la estructura corporativa:
+                    </p>
+
+                    <!-- Síntesis Visual de la Infografía (3 bloques compactos) -->
+                    <div class="mt-3 bg-navy-900 text-white rounded-xl p-3">
+                        <div class="text-[10px] uppercase font-bold text-amber-300 tracking-wider text-center mb-2">
+                            Ruta de Transformación (Infografía)
+                        </div>
+                        <div class="grid grid-cols-3 gap-1.5 text-center items-center">
+                            <div class="bg-navy-800 rounded-lg p-2 border border-slate-700">
+                                <div class="text-base mb-0.5">💼</div>
+                                <div class="text-[10px] font-bold leading-tight">Fraude inicial básico</div>
+                            </div>
+                            <div class="bg-navy-800 rounded-lg p-2 border border-slate-700">
+                                <div class="text-base mb-0.5">🏢</div>
+                                <div class="text-[10px] font-bold leading-tight">Proceso complejo estructurado</div>
+                            </div>
+                            <div class="bg-gold-500/20 rounded-lg p-2 border border-amber-400/50">
+                                <div class="text-base mb-0.5">🌐</div>
+                                <div class="text-[10px] font-bold text-amber-300 leading-tight">Impacto financiero global</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Selector Paso a Paso de las 4 Fases -->
+                <div class="grid grid-cols-4 gap-1.5">
+                    <button onclick="selectEvoPhase(0)" id="evo-pill-0" class="evo-pill py-2.5 px-1 rounded-xl text-center font-bold text-xs bg-navy-900 text-white shadow cursor-pointer">
+                        Fase 1
+                    </button>
+                    <button onclick="selectEvoPhase(1)" id="evo-pill-1" class="evo-pill py-2.5 px-1 rounded-xl text-center font-bold text-xs bg-white text-slate-700 border border-slate-200 cursor-pointer">
+                        Fase 2
+                    </button>
+                    <button onclick="selectEvoPhase(2)" id="evo-pill-2" class="evo-pill py-2.5 px-1 rounded-xl text-center font-bold text-xs bg-white text-slate-700 border border-slate-200 cursor-pointer">
+                        Fase 3
+                    </button>
+                    <button onclick="selectEvoPhase(3)" id="evo-pill-3" class="evo-pill py-2.5 px-1 rounded-xl text-center font-bold text-xs bg-white text-slate-700 border border-slate-200 cursor-pointer">
+                        Fase 4
+                    </button>
+                </div>
+
+                <!-- Tarjeta Detallada de la Fase Activa -->
+                <div id="evo-mobile-card" class="bg-white rounded-2xl p-5 border-2 border-navy-900/15 shadow-sm space-y-3">
+                    <!-- Renderizado por JS -->
+                </div>
+
+                <!-- Botones táctiles Anterior / Siguiente -->
+                <div class="flex items-center justify-between gap-3">
+                    <button onclick="stepEvoPhase(-1)" id="evo-prev-btn" class="flex-1 py-3 rounded-xl bg-white border border-slate-300 text-slate-700 font-bold text-xs active:bg-slate-100 disabled:opacity-40 cursor-pointer">
+                        ← Anterior
+                    </button>
+                    <button onclick="stepEvoPhase(1)" id="evo-next-btn" class="flex-1 py-3 rounded-xl bg-navy-900 text-white font-bold text-xs active:bg-navy-800 disabled:opacity-40 cursor-pointer">
+                        Siguiente Fase →
+                    </button>
+                </div>
+            </section>
+
+            <!-- -------------------------------------------------------------
+                 PESTAÑA 3: III. VÍNCULO CONCEPTUAL Y COMPARADOR
+            -------------------------------------------------------------- -->
+            <section id="tab-3" class="tab-panel hidden space-y-4">
+                <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+                    <span class="text-[10px] font-extrabold uppercase tracking-widest text-gold-600">Sección III • Arquitectura Penal</span>
+                    <h2 class="font-serif text-lg font-bold text-navy-900 mt-0.5 mobile-title">
+                        Delincuencia Organizada, Asociación, Legitimación y Agavillamiento
+                    </h2>
+                    <p class="text-xs text-slate-600 mt-1 leading-relaxed mobile-text">
+                        Estos cuatro conceptos conectan al <strong>sujeto/estructura</strong>, la <strong>forma de actuar</strong> y el <strong>tratamiento del dinero</strong>.
+                    </p>
+                </div>
+
+                <!-- Esquema Vertical Adaptado a Móvil (Nexo Empresarial) -->
+                <div class="bg-navy-900 text-white rounded-2xl p-4 shadow-md space-y-3">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                        <span class="text-xs font-bold text-amber-300 uppercase tracking-wider">Esquema de Conexión</span>
+                        <span class="text-[11px] bg-navy-800 px-2 py-0.5 rounded text-slate-300">Empresa / Estructura</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-2.5">
+                        <div class="bg-navy-800/90 p-3 rounded-xl border border-slate-700">
+                            <div class="text-xs font-extrabold text-amber-300">1. DELINCUENCIA ORGANIZADA</div>
+                            <p class="text-xs text-slate-200 mt-1 leading-relaxed mobile-text">
+                                Estructura criminal (o persona jurídica instrumentalizada) orientada a cometer delitos graves y obtener beneficios.
+                            </p>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="bg-navy-800/90 p-3 rounded-xl border border-slate-700">
+                                <div class="text-[11px] font-extrabold text-amber-300">2. ASOCIACIÓN</div>
+                                <p class="text-[11px] text-slate-300 mt-1 leading-snug">
+                                    Unión permanente (Art. 37 LOCDOFT) dentro de delincuencia organizada.
+                                </p>
+                            </div>
+                            <div class="bg-navy-800/90 p-3 rounded-xl border border-slate-700">
+                                <div class="text-[11px] font-extrabold text-amber-300">3. AGAVILLAMIENTO</div>
+                                <p class="text-[11px] text-slate-300 mt-1 leading-snug">
+                                    Concierto común (Art. 286 CP) de 2 o más personas para delinquir.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="bg-emerald-950/60 p-3 rounded-xl border border-emerald-500/40">
+                            <div class="text-xs font-extrabold text-emerald-300">4. LEGITIMACIÓN DE CAPITALES (EL PUENTE)</div>
+                            <p class="text-xs text-slate-200 mt-1 leading-relaxed mobile-text">
+                                Da salida y apariencia legal a las ganancias ilícitas de la asociación; a su vez, lavar dinero complejo exige coordinación societaria.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Selector Táctil de Comparación Directa -->
+                <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-3">
+                    <h3 class="font-serif text-base font-bold text-navy-900">Comparador Forense</h3>
+                    <div class="grid grid-cols-2 gap-1.5 bg-slate-100 p-1 rounded-xl">
+                        <button onclick="switchCompareTab('asoc-vs-agav')" id="cmp-tab-1" class="py-2 px-2 rounded-lg text-xs font-bold bg-navy-900 text-white shadow transition cursor-pointer">
+                            Asociación vs. Agavillamiento
+                        </button>
+                        <button onclick="switchCompareTab('puente-lavado')" id="cmp-tab-2" class="py-2 px-2 rounded-lg text-xs font-bold text-slate-700 transition cursor-pointer">
+                            Puente hacia el Lavado
+                        </button>
+                    </div>
+
+                    <div id="cmp-content-1" class="space-y-2.5 pt-1">
+                        <div class="p-3 rounded-xl bg-blue-50/70 border border-blue-200">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-xs font-extrabold text-navy-900">Asociación (Art. 37 LOCDOFT)</span>
+                                <span class="text-[10px] font-bold bg-red-100 text-red-700 px-2 py-0.5 rounded">Mayor gravedad</span>
+                            </div>
+                            <p class="text-xs text-slate-700 leading-relaxed mobile-text">
+                                Ley especial contra Delincuencia Organizada. Aplica a redes estructuradas o personas jurídicas orientadas a delitos graves, con escala penal severa. Basta el solo hecho de asociarse.
+                            </p>
+                        </div>
+                        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-xs font-extrabold text-slate-800">Agavillamiento (Art. 286 CP)</span>
+                                <span class="text-[10px] font-bold bg-slate-200 text-slate-700 px-2 py-0.5 rounded">Derecho Común</span>
+                            </div>
+                            <p class="text-xs text-slate-700 leading-relaxed mobile-text">
+                                Figura clásica del Código Penal ordinario cuando dos o más personas se asocian para cometer delitos comunes, con menor escala de penas que la LOCDOFT.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div id="cmp-content-2" class="hidden space-y-2.5 pt-1">
+                        <div class="p-3.5 rounded-xl bg-amber-50 border border-amber-200">
+                            <h4 class="text-xs font-extrabold text-amber-900 uppercase mb-1">Doble Conexión Operativa</h4>
+                            <p class="text-xs text-slate-700 leading-relaxed mobile-text mb-2">
+                                <strong>1. De la estructura al lavado:</strong> Una organización que comete delitos lucrativos (económicos, fiscales o corrupción) necesita dar apariencia legal a esas ganancias mediante legitimación de capitales.
+                            </p>
+                            <p class="text-xs text-slate-700 leading-relaxed mobile-text">
+                                <strong>2. Del lavado a la asociación:</strong> Blanquear capitales a gran escala requiere varias personas, testaferros o sociedades, reconectando con la asociación ilícita.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- -------------------------------------------------------------
+                 PESTAÑA 4: IV. FINANCIAMIENTO AL TERRORISMO
+            -------------------------------------------------------------- -->
+            <section id="tab-4" class="tab-panel hidden space-y-4">
+                <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+                    <span class="text-[10px] font-extrabold uppercase tracking-widest text-red-600">Sección IV • Seguridad y Riesgo</span>
+                    <h2 class="font-serif text-lg font-bold text-navy-900 mt-0.5 mobile-title">
+                        Financiamiento al Terrorismo
+                    </h2>
+                    <p class="text-xs text-slate-600 mt-1 leading-relaxed mobile-text">
+                        Los crímenes económicos y canales financieros corporativos pueden subvertirse para financiar actividades terroristas.
+                    </p>
+                </div>
+
+                <!-- Contraste: Origen vs. Destino -->
+                <div class="space-y-3">
+                    <div class="bg-white rounded-2xl p-4 border-l-4 border-navy-900 shadow-sm">
+                        <span class="text-[10px] font-extrabold uppercase bg-slate-100 text-navy-900 px-2 py-0.5 rounded">Foco en el Origen</span>
+                        <h3 class="font-serif text-base font-bold text-navy-900 mt-1.5">Legitimación de Capitales</h3>
+                        <p class="text-xs text-slate-700 mt-1 leading-relaxed mobile-text">
+                            El dinero casi siempre proviene de un <strong>delito previo</strong> y el objetivo es <em>"limpiarlo"</em> o darle apariencia legal en la economía formal.
+                        </p>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-4 border-l-4 border-red-600 shadow-sm">
+                        <span class="text-[10px] font-extrabold uppercase bg-red-100 text-red-700 px-2 py-0.5 rounded">Foco en el Destino y Uso</span>
+                        <h3 class="font-serif text-base font-bold text-navy-900 mt-1.5">Financiamiento al Terrorismo</h3>
+                        <p class="text-xs text-slate-700 mt-1 leading-relaxed mobile-text">
+                            Importa el <strong>destino terrorista</strong> de los fondos. Pueden provenir de fuentes <strong>ilícitas</strong> (narcotráfico, extorsión, contrabando, fraude) o <strong>aparentemente lícitas</strong> (donaciones, comercios, recursos empresariales desviados).
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Acordeones: ¿Quién realiza el Financiamiento al Terrorismo? -->
+                <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-2.5">
+                    <h3 class="font-serif text-base font-bold text-navy-900">¿Quién puede realizarlo?</h3>
+                    <p class="text-xs text-slate-500">Toca cada categoría de actor para ver su alcance:</p>
+
+                    <!-- Actor 1 -->
+                    <div class="border border-slate-200 rounded-xl overflow-hidden">
+                        <button onclick="toggleMobileActor('m-actor-1')" class="w-full p-3.5 text-left bg-slate-50 flex items-center justify-between font-bold text-xs text-navy-900 cursor-pointer">
+                            <span>👤 Personas Naturales</span>
+                            <span id="m-icon-1" class="text-gold-600 font-black">+</span>
+                        </button>
+                        <div id="m-actor-1" class="hidden p-3.5 text-xs text-slate-700 leading-relaxed bg-white border-t border-slate-100 mobile-text">
+                            Quienes recolectan, transfieren, resguardan o entregan dinero, bienes o apoyo logístico sabiendo que servirán a un terrorista o grupo terrorista.
+                        </div>
+                    </div>
+
+                    <!-- Actor 2 -->
+                    <div class="border border-slate-200 rounded-xl overflow-hidden">
+                        <button onclick="toggleMobileActor('m-actor-2')" class="w-full p-3.5 text-left bg-slate-50 flex items-center justify-between font-bold text-xs text-navy-900 cursor-pointer">
+                            <span>🏢 Personas Jurídicas y Actores Económicos</span>
+                            <span id="m-icon-2" class="text-gold-600 font-black">+</span>
+                        </button>
+                        <div id="m-actor-2" class="hidden p-3.5 text-xs text-slate-700 leading-relaxed bg-white border-t border-slate-100 mobile-text">
+                            Empresas, intermediarios financieros, casas de cambio, importadoras o asociaciones usadas de forma consciente o instrumentalizada para mover fondos y disfrazar envíos bajo operaciones comerciales.
+                        </div>
+                    </div>
+
+                    <!-- Actor 3 -->
+                    <div class="border border-slate-200 rounded-xl overflow-hidden">
+                        <button onclick="toggleMobileActor('m-actor-3')" class="w-full p-3.5 text-left bg-slate-50 flex items-center justify-between font-bold text-xs text-navy-900 cursor-pointer">
+                            <span>🌐 Redes o Grupos Organizados</span>
+                            <span id="m-icon-3" class="text-gold-600 font-black">+</span>
+                        </button>
+                        <div id="m-actor-3" class="hidden p-3.5 text-xs text-slate-700 leading-relaxed bg-white border-t border-slate-100 mobile-text">
+                            Estructuras que operan mediante transferencias fraccionadas, intermediarios, empresas fachada o circuitos informales para evadir controles financieros y recomendaciones del GAFI.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- -------------------------------------------------------------
+                 PESTAÑA 5: V. SENTENCIA TSJ & QUIZ RÁPIDO MÓVIL
+            -------------------------------------------------------------- -->
+            <section id="tab-5" class="tab-panel hidden space-y-4">
+                <!-- Ficha Jurisprudencia TSJ -->
+                <div class="bg-navy-900 text-white rounded-2xl shadow-md border-l-4 border-gold-500 overflow-hidden">
+                    <button type="button" onclick="toggleSentenciaCard('sentencia-2021-body', 'sentencia-2021-icon', this)" class="w-full p-4 text-left flex items-center justify-between gap-3 cursor-pointer" aria-expanded="false" aria-controls="sentencia-2021-body">
+                        <div>
+                            <div class="flex items-center gap-2 mb-1.5">
+                                <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-300">Jurisprudencia TSJ</span>
+                                <span class="text-[10px] bg-navy-800 px-2 py-0.5 rounded text-slate-300">17 marzo 2021</span>
+                            </div>
+                            <h2 class="font-serif text-base font-bold leading-snug mobile-title">
+                                Sentencia N° 006 — Sala de Casación Penal del TSJ
+                            </h2>
+                            <p class="mt-1 text-[11px] text-slate-300">Expediente AA30-P-2020-000116 · Ver resumen</p>
+                        </div>
+                        <span id="sentencia-2021-icon" class="w-7 h-7 rounded-full bg-navy-800 text-amber-300 flex items-center justify-center font-extrabold text-sm shrink-0">+</span>
+                    </button>
+                    <div id="sentencia-2021-body" class="hidden border-t border-slate-700 p-4 space-y-3">
+                    <div class="text-xs text-slate-200 leading-relaxed mobile-text space-y-1">
+                        <p><strong>Fecha:</strong> 17-03-2021</p>
+                        <p><strong>Expediente:</strong> N° AA30-P-2020-000116</p>
+                        <p><strong>Magistrado Ponente:</strong> Dr. MAIKEL JOSÉ MORENO PÉREZ</p>
+                        <p><strong>Asunto:</strong> Legitimación de Capitales (artículo 35 de la LOCDOFT)</p>
+                        <p><strong>Contra el ciudadano:</strong> MAJD HANSI</p>
+                        <p><strong>Cédula:</strong> E-84.608.829</p>
+                    </div>
+                    <div class="border-t border-slate-700 pt-2.5 space-y-2.5">
+                        <h3 class="text-xs font-extrabold text-amber-300 uppercase tracking-wide">Resumen de la sentencia</h3>
+                        <p class="text-xs text-slate-200 leading-relaxed mobile-text">
+                            <strong>Alcance procesal:</strong> Sentencia de avocamiento, no de fondo. La Sala de Casación Penal acordó de oficio avocarse al conocimiento de la causa, sustraerla del Tribunal Primero de Primera Instancia en Funciones de Control del estado Anzoátegui y remitirla al Circuito Judicial Penal del Área Metropolitana de Caracas para la continuación del proceso.
+                        </p>
+                        <p class="text-xs text-slate-200 leading-relaxed mobile-text">
+                            <strong>Uso de figuras societarias y operaciones mercantiles:</strong> Aparecen sociedades vinculadas a la actividad minera y económica, como Inversiones Peniel Gold, C.A., Agrominera La Prueba Dorada, C.A. y PDC Gran Sasso, C.A.; documentos constitutivos, alianzas estratégicas, notificaciones ante la Corporación Venezolana de Minería y alegatos sobre un préstamo o negociación de extracción/cambio de oro por 1.000.000,00 USD en efectivo.
+                        </p>
+                        <p class="text-xs text-slate-200 leading-relaxed mobile-text">
+                            <strong>Problema probatorio:</strong> El juzgado de control advirtió que la simple invocación de relaciones comerciales o documentos no basta sin determinar los elementos del tipo del artículo 35 de la LOCDOFT ni el delito previo. La sentencia recoge entrevistas y diligencias sobre la negación de un préstamo por el representante de PDC Gran Sasso, C.A., y el análisis de comunicaciones y traslados de efectivo entre Caracas y el estado Bolívar.
+                        </p>
+                        <p class="text-xs text-slate-200 leading-relaxed mobile-text">
+                            <strong>Bien jurídico y dimensión transnacional:</strong> La Sala encuadra la legitimación de capitales como un delito grave y pluriofensivo que afecta el orden socioeconómico y la administración de justicia, vinculado a delitos previos graves —como el tráfico o comercio ilícito de recursos o materiales estratégicos y metales o piedras preciosas— y a la Convención de Palermo.
+                        </p>
+                    </div>
+                    <div class="pt-1">
+                        <a href="sentencia%20legitimacion%20de%20c.pdf" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between w-full px-3 py-3 rounded-xl bg-blue-600 active:bg-blue-700 text-white border border-blue-500 shadow-sm transition">
+                            <span class="text-left">
+                                <span class="block text-xs font-extrabold">Sentencia N° 006 — 17-03-2021</span>
+                                <span class="block mt-0.5 text-[10px] text-blue-100">Sala de Casación Penal · Expediente AA30-P-2020-000116</span>
+                            </span>
+                            <span class="ml-2 text-lg shrink-0" aria-hidden="true">↗</span>
+                        </a>
+                    </div>
+                    </div>
+                </div>
+
+                <!-- Segunda tarjeta desplegable: expediente AA30-P-2020-000066 -->
+                <div class="bg-navy-900 text-white rounded-2xl shadow-md border-l-4 border-gold-500 overflow-hidden">
+                    <button type="button" onclick="toggleSentenciaCard('sentencia-2020-body', 'sentencia-2020-icon', this)" class="w-full p-4 text-left flex items-center justify-between gap-3 cursor-pointer" aria-expanded="false" aria-controls="sentencia-2020-body">
+                        <div>
+                            <div class="flex items-center gap-2 mb-1.5">
+                                <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-300">Jurisprudencia TSJ</span>
+                                <span class="text-[10px] bg-navy-800 px-2 py-0.5 rounded text-slate-300">29 junio 2020</span>
+                            </div>
+                            <h2 class="font-serif text-base font-bold leading-snug mobile-title">
+                                Expediente AA30-P-2020-000066
+                            </h2>
+                            <p class="mt-1 text-[11px] text-slate-300">Solicitud de Radicación de causa penal · Ver resolución</p>
+                        </div>
+                        <span id="sentencia-2020-icon" class="w-7 h-7 rounded-full bg-navy-800 text-amber-300 flex items-center justify-center font-extrabold text-sm shrink-0">+</span>
+                    </button>
+
+                    <div id="sentencia-2020-body" class="hidden border-t border-slate-700 p-4 space-y-3">
+                        <div class="text-xs text-slate-200 leading-relaxed mobile-text space-y-1">
+                            <p><strong>Fecha:</strong> 29 de junio de 2020</p>
+                            <p><strong>Magistrado Ponente:</strong> Dr. Maikel José Moreno Pérez</p>
+                            <p><strong>Tipo de actuación:</strong> Solicitud de Radicación de causa penal</p>
+                            <p><strong>Tribunal de origen:</strong> Juzgado Tercero de Primera Instancia en Función de Control del Circuito Judicial Penal del estado Falcón</p>
+                        </div>
+
+                        <div class="border-t border-slate-700 pt-3 space-y-2.5">
+                            <h3 class="text-xs font-extrabold text-amber-300 uppercase tracking-wide">Delitos imputados</h3>
+                            <p class="text-xs text-slate-200 leading-relaxed mobile-text">Tráfico ilícito de sustancias estupefacientes y psicotrópicas (Art. 149 de la Ley Orgánica de Drogas y Art. 83 del Código Penal); legitimación de capitales (Art. 35 de la Ley Contra la Delincuencia Organizada y Financiamiento al Terrorismo); y asociación (Art. 37 de la misma ley).</p>
+
+                            <h3 class="text-xs font-extrabold text-amber-300 uppercase tracking-wide pt-1">Sujetos procesales</h3>
+                            <p class="text-xs text-slate-200 leading-relaxed mobile-text"><strong>Imputados:</strong> Emilio Enrique Martínez, Héctor Ramón Martínez, Ángel Alberto Martínez, Delso de Jesús Martínez, Beryoris Irene Martínez Valles, Mariangela Martínez Márquez, Zaidubys Omaira Marín y Jorge Luis Martínez.</p>
+                            <p class="text-xs text-slate-200 leading-relaxed mobile-text"><strong>Solicitante:</strong> Abogada Liliana Yaneth Herrera, Fiscal Auxiliar Interina de la Fiscalía Vigésima Séptima del Ministerio Público con Competencia Penal a Nivel Nacional.</p>
+
+                            <h3 class="text-xs font-extrabold text-amber-300 uppercase tracking-wide pt-1">Resumen de la solicitud</h3>
+                            <p class="text-xs text-slate-200 leading-relaxed mobile-text">La investigación se originó por una denuncia sobre el funcionamiento de la Fundación Carmen Virginia Martínez (RIF J-411900966) en Punto Fijo, estado Falcón. Se alegó que adquiría bienes pagados en moneda extranjera y recibía financiamiento de Emilio Enrique Martínez, alias “Chiche Smith”, señalado como traficante de drogas.</p>
+                            <p class="text-xs text-slate-200 leading-relaxed mobile-text">Un barrido criminalístico realizado a las embarcaciones “Castillito” y “Medea”, pertenecientes a Pesquera Hedelmar C.A., arrojó resultado positivo para alcaloide de cocaína. La Fiscalía pidió trasladar la causa a otro Circuito Judicial Penal al amparo del Art. 64, numeral 1, del COPP.</p>
+
+                            <h3 class="text-xs font-extrabold text-amber-300 uppercase tracking-wide pt-1">Criterio jurídico del TSJ</h3>
+                            <p class="text-xs text-slate-200 leading-relaxed mobile-text">La Sala de Casación Penal se declaró competente y citó las Sentencias N° 582 de 2006 y N° 281 de 2018. Estableció que la gravedad del delito no depende solo de la pena, sino del daño causado, los medios de comisión y la relación entre las partes.</p>
+                            <p class="text-xs text-slate-200 leading-relaxed mobile-text">Al concluir que los hechos eran graves y habían causado alarma y conmoción en Falcón, sostuvo que correspondía apartar la causa del tribunal de origen para garantizar la imparcialidad y la correcta administración de justicia.</p>
+                        </div>
+
+                        <div class="pt-1">
+                            <a id="sentencia-aa30-p-2020-000066-link"
+                               href="./historico.tsj.gob.ve_decisiones_scp_julio_309892-19-3720-2020-R20-66.HTML.pdf"
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               class="flex items-center justify-between w-full px-3 py-3 rounded-xl bg-blue-600 active:bg-blue-700 text-white border border-blue-500 shadow-sm transition">
+                                <span class="text-left">
+                                    <span class="block text-xs font-extrabold">Abrir sentencia completa</span>
+                                    <span class="block mt-0.5 text-[10px] text-blue-100">Expediente AA30-P-2020-000066 · 29-06-2020</span>
+                                </span>
+                                <span class="ml-2 text-lg shrink-0" aria-hidden="true">↗</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Infografía Directa para los Jueces Evaluadores (1795268791064.jpg) -->
+                <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-3 max-w-full overflow-hidden box-border">
+                    <div class="flex items-start justify-between gap-2 border-b border-slate-100 pb-2.5">
+                        <div>
+                            <span class="inline-flex items-center space-x-1 text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-navy-900 text-amber-300">
+                                <span>📌 Material del Expositor</span>
+                            </span>
+                            <h3 class="font-serif text-base font-bold text-navy-900 mt-1 leading-snug mobile-title">
+                                Infografía Oficial (1795268791064.jpg)
+                            </h3>
+                        </div>
+                        <button onclick="openInfographicModal()" type="button" class="px-2.5 py-1.5 rounded-xl bg-amber-100 active:bg-amber-200 text-amber-950 border border-amber-300 text-[11px] font-extrabold shrink-0 cursor-pointer">
+                            Ampliar 🔍
+                        </button>
+                    </div>
+
+                    <p class="text-xs text-slate-600 leading-relaxed mobile-text">
+                        Síntesis visual consultada por el participante durante la exposición para que el jurado evaluador verifique la correspondencia exacta con los apuntes jurídicos:
+                    </p>
+
+                    <div class="relative rounded-2xl overflow-hidden border border-slate-300 bg-slate-100 shadow-inner">
+                        <img
+                            id="github-infographic-main"
+                            src="1795268791064.jpg"
+                            data-github-src="https://raw.githubusercontent.com/ismaelzambrano/delitos-economicos-empresa/main/1795268791064.jpg"
+                            alt="Infografía Delitos Económicos en el Ámbito de la Empresa"
+                            onclick="openInfographicModal()"
+                            onerror="handleInfographicError(this)"
+                            class="w-full h-auto object-contain block cursor-zoom-in"
+                        />
+                        <div id="github-infographic-fallback" class="hidden p-4 bg-[#f6f3eb] text-slate-800 space-y-2.5 text-xs">
+                            <div class="text-center font-serif font-black text-sm text-navy-900 border-b border-slate-300 pb-2">
+                                DELITOS ECONÓMICOS EN EL ÁMBITO DE LA EMPRESA
+                            </div>
+                            <div class="bg-white p-2.5 rounded-xl border border-slate-200">
+                                <strong class="text-navy-900 block">I. MARCO NORMATIVO (LOCDOFT, CP, GAFI)</strong>
+                                <span>LOCDOFT, Código Penal (CP) y Recomendaciones del GAFI.</span>
+                            </div>
+                            <div class="bg-white p-2.5 rounded-xl border border-slate-200">
+                                <strong class="text-navy-900 block">II. EVOLUCIÓN DEL DELITO EN LA EMPRESA</strong>
+                                <span>Fraude inicial básico → Proceso complejo estructurado → Impacto financiero global.</span>
+                            </div>
+                            <div class="bg-white p-2.5 rounded-xl border border-slate-200">
+                                <strong class="text-navy-900 block">III. DELINCUENCIA ORGANIZADA, ASOCIACIÓN, LEGITIMACIÓN Y AGAVILLAMIENTO</strong>
+                                <span>Estructura criminal, unión permanente, apariencia legal a fondos ilícitos y concierto planificado.</span>
+                            </div>
+                            <div class="bg-white p-2.5 rounded-xl border border-slate-200">
+                                <strong class="text-navy-900 block">IV. FINANCIAMIENTO AL TERRORISMO</strong>
+                                <span>Nexos con el crimen organizado, canales financieros ilícitos y responsabilidad de la empresa.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between text-[11px] text-slate-500 pt-0.5">
+                <!-- Material Audiovisual Relacionado (Video de WhatsApp en GitHub) -->
+                <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-3 max-w-full overflow-hidden box-border">
+                    <div class="flex items-start justify-between gap-2 border-b border-slate-100 pb-2.5">
+                        <div>
+                            <span class="inline-flex items-center space-x-1 text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-navy-900 text-amber-300">
+                                <span>🎬 Recurso Multimedia • GitHub</span>
+                            </span>
+                            <h3 class="font-serif text-base font-bold text-navy-900 mt-1 leading-snug mobile-title">
+                                Material Audiovisual Relacionado
+                            </h3>
+                        </div>
+                    </div>
+
+                    <!-- Contextualización jurídica y corporativa -->
+                    <div class="bg-slate-50 rounded-xl p-3 border border-slate-200/80 space-y-1.5 max-w-full overflow-hidden box-border">
+                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-gold-600 block">
+                            Vinculación Práctica con la Exposición
+                        </span>
+                        <p class="text-xs text-slate-700 leading-relaxed mobile-text break-words">
+                            Este material audiovisual ilustra en la práctica cómo operan los <strong>delitos económicos dentro de la estructura empresarial</strong>, mostrando la delgada línea entre la gestión mercantil lícita y la instrumentalización societaria para la <strong>legitimación de capitales</strong>.
+                        </p>
+                        <p class="text-xs text-slate-700 leading-relaxed mobile-text break-words">
+                            Refuerza la importancia del <strong>cumplimiento normativo (Compliance)</strong> exigido por las <strong>Recomendaciones del GAFI</strong> y la <strong>LOCDOFT</strong> (debida diligencia, identificación del beneficiario final y reporte de operaciones sospechosas) para evitar la <strong>responsabilidad penal de la empresa</strong> y sus directivos.
+                        </p>
+                    </div>
+
+                    <!-- Reproductor HTML5 para WhatsApp Video 2026-11-21 at 19.27.44.mp4 en el repositorio de GitHub -->
+                    <div class="w-full max-w-full mx-auto relative rounded-2xl overflow-hidden border border-slate-300 bg-navy-950 shadow-inner box-border">
+                        <video
+                            id="github-whatsapp-video"
+                            controls
+                            playsinline
+                            preload="metadata"
+                            class="w-full max-w-full mx-auto max-h-[420px] bg-navy-950 block box-border"
+                            onerror="handleVideoError()"
+                        >
+                            <source id="github-video-source" src="./WhatsApp%20Video%202026-11-21%20at%2019.27.44.mp4" type="video/mp4" />
+                            Tu navegador no soporta la reproducción de video HTML5.
+                        </video>
+
+                        <!-- Aviso de respaldo si el archivo tarda o requiere ajustar la ruta raw en GitHub -->
+                        <div id="github-video-fallback" class="hidden p-4 bg-navy-900 text-white text-xs space-y-2.5 border-t border-slate-800 max-w-full box-border">
+                            <div class="font-bold text-amber-300">
+                                ⚠️ No se pudo cargar el video automáticamente desde la ruta actual.
+                            </div>
+                            <p class="text-slate-300 leading-relaxed">
+                                Verifica que <span class="font-mono text-amber-200">WhatsApp Video 2026-11-21 at 19.27.44.mp4</span> esté en la raíz del repositorio o ingresa la URL directa (<span class="font-mono">raw.githubusercontent.com</span>):
+                            </p>
+                            <div class="space-y-1.5">
+                                <input
+                                    id="custom-github-video-url"
+                                    type="url"
+                                    placeholder="https://raw.githubusercontent.com/usuario/repo/main/WhatsApp%20Video%202026-11-21%20at%2019.27.44.mp4"
+                                    class="w-full max-w-full px-3 py-2 rounded-xl bg-navy-950 border border-slate-700 text-white text-xs focus:outline-none focus:border-gold-500 box-border"
+                                />
+                                <button
+                                    onclick="applyCustomVideoUrl()"
+                                    type="button"
+                                    class="w-full max-w-full py-2.5 px-3 rounded-xl bg-gold-500 active:bg-amber-600 text-navy-950 font-extrabold text-xs cursor-pointer box-border"
+                                >
+                                    Cargar URL del Video
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between text-[11px] text-slate-500 pt-0.5 gap-2 w-full max-w-full min-w-0 overflow-hidden">
+                        <span id="active-video-path" class="font-mono min-w-0 flex-1 truncate">./WhatsApp%20Video%202026-11-21%20at%2019.27.44.mp4</span>
+                        <button onclick="resetDefaultVideoUrl()" type="button" class="font-bold text-navy-900 underline cursor-pointer shrink-0 whitespace-nowrap">
+                            Restablecer ruta
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            </section>
+        <!-- =================================================================
+             BOTTOM NAVIGATION BAR FIJA (OPTIMIZADA PARA PULGAR)
+        ================================================================== -->
+        <nav aria-label="Navegación de módulos de la unidad" class="old-module-nav hidden fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-30 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-[0_-4px_16px_rgba(15,23,42,0.08)] px-1 py-1.5">
+            <div class="grid grid-cols-5 gap-0.5">
+                <button onclick="switchMobileTab(1)" id="nav-btn-1" class="nav-tab-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-navy-900 bg-amber-50 font-extrabold transition cursor-pointer">
+                    <svg class="w-5 h-5 mb-0.5 text-gold-600" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/>
+                    </svg>
+                    <span class="text-[10px] leading-none">I. Normas</span>
+                </button>
+
+                <button onclick="switchMobileTab(2)" id="nav-btn-2" class="nav-tab-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-slate-500 font-semibold transition cursor-pointer">
+                    <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                    </svg>
+                    <span class="text-[10px] leading-none">II. Evolución</span>
+                </button>
+
+                <button onclick="switchMobileTab(3)" id="nav-btn-3" class="nav-tab-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-slate-500 font-semibold transition cursor-pointer">
+                    <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                    </svg>
+                    <span class="text-[10px] leading-none">III. Vínculo</span>
+                </button>
+
+                <button onclick="switchMobileTab(4)" id="nav-btn-4" class="nav-tab-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-slate-500 font-semibold transition cursor-pointer">
+                    <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                    <span class="text-[10px] leading-none">IV. Terrorismo</span>
+                </button>
+
+                <button onclick="switchMobileTab(5)" id="nav-btn-5" class="nav-tab-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-slate-500 font-semibold transition cursor-pointer">
+                    <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span class="text-[10px] leading-none">TSJ & Medios</span>
+                </button>
+            </div>
+        </nav>
+        </main>
+        </div>
+        </div>
+
+        <div id="pending-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="pending-modal-title">
+            <section class="modal-card">
+                <div class="flex items-start justify-between gap-4 mb-5">
+                    <div><p class="text-[10px] uppercase tracking-widest font-extrabold text-[#8B1E3F]">Seguimiento académico</p><h2 id="pending-modal-title" class="text-xl font-bold mt-1">Pendientes y evaluaciones</h2></div>
+                    <button type="button" class="theme-toggle" aria-label="Cerrar" onclick="closeModal('pending-modal')">✕</button>
+                </div>
+                <div id="pending-list" class="space-y-3"></div>
+                <button type="button" onclick="openPendingForm()" class="mt-5 w-full rounded-xl bg-[#0F2C59] px-4 py-3 text-sm font-bold text-white">＋ Agregar actividad</button>
+            </section>
+        </div>
+        <div id="resource-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="resource-modal-title">
+            <section class="modal-card">
+                <div class="flex items-start justify-between gap-4 mb-5">
+                    <div><p class="text-[10px] uppercase tracking-widest font-extrabold text-[#8B1E3F]">Biblioteca del curso</p><h2 id="resource-modal-title" class="text-xl font-bold mt-1">Agregar material</h2></div>
+                    <button type="button" class="theme-toggle" aria-label="Cerrar" onclick="closeModal('resource-modal')">✕</button>
+                </div>
+                <form id="resource-form" class="space-y-4">
+                    <label class="block text-sm font-semibold">Título<input class="form-field mt-1" name="titulo" required maxlength="120"></label>
+                    <label class="block text-sm font-semibold">Tipo<select class="form-field mt-1" name="tipo"><option value="escrito">Escrito / documento</option><option value="grabacion">Grabación</option><option value="info">Información general</option></select></label>
+                    <label class="block text-sm font-semibold">Descripción<textarea class="form-field mt-1" name="descripcion" rows="3" maxlength="500"></textarea></label>
+                    <label class="block text-sm font-semibold">Enlace (opcional)<input class="form-field mt-1" type="url" name="urlOContenido" placeholder="https://..."></label>
+                    <p id="resource-form-error" class="hidden text-sm text-red-600" role="alert"></p>
+                    <div class="flex justify-end gap-2"><button type="button" onclick="closeModal('resource-modal')" class="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-bold">Cancelar</button><button type="submit" class="rounded-xl bg-[#0F2C59] px-4 py-2.5 text-sm font-bold text-white">Guardar material</button></div>
+                </form>
+            </section>
+        </div>
+        <div id="pending-form-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="pending-form-title">
+            <section class="modal-card">
+                <div class="flex items-start justify-between gap-4 mb-5">
+                    <div><p class="text-[10px] uppercase tracking-widest font-extrabold text-[#8B1E3F]">Planificación</p><h2 id="pending-form-title" class="text-xl font-bold mt-1">Nueva actividad evaluativa</h2></div>
+                    <button type="button" class="theme-toggle" aria-label="Cerrar" onclick="closeModal('pending-form-modal')">✕</button>
+                </div>
+                <form id="pending-form" class="space-y-4">
+                    <label class="block text-sm font-semibold">Título<input class="form-field mt-1" name="titulo" required maxlength="120"></label>
+                    <label class="block text-sm font-semibold">Tipo<select class="form-field mt-1" name="tipo"><option value="examen">Examen</option><option value="taller">Taller</option><option value="otro">Otro</option></select></label>
+                    <label class="block text-sm font-semibold">Fecha de entrega<input class="form-field mt-1" type="date" name="fechaEntrega" required></label>
+                    <p id="pending-form-error" class="hidden text-sm text-red-600" role="alert"></p>
+                    <div class="flex justify-end gap-2"><button type="button" onclick="closeModal('pending-form-modal')" class="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-bold">Cancelar</button><button type="submit" class="rounded-xl bg-[#0F2C59] px-4 py-2.5 text-sm font-bold text-white">Guardar actividad</button></div>
+                </form>
+            </section>
+        </div>
+        <div id="actions-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="actions-modal-title">
+            <section class="modal-card">
+                <div class="flex items-start justify-between gap-4 mb-5">
+                    <div><p class="text-[10px] uppercase tracking-widest font-extrabold text-[#8B1E3F]">Acciones rápidas</p><h2 id="actions-modal-title" class="text-xl font-bold mt-1">Agregar a la unidad</h2></div>
+                    <button type="button" class="theme-toggle" aria-label="Cerrar" onclick="closeModal('actions-modal')">✕</button>
+                </div>
+                <div class="space-y-3">
+                    <button type="button" onclick="startAddResource()" class="w-full rounded-xl bg-[#0F2C59] px-4 py-3 text-left font-bold text-white">＋ Subir material</button>
+                    <button type="button" onclick="startAddPending()" class="w-full rounded-xl border border-slate-200 px-4 py-3 text-left font-bold">＋ Agregar evaluación o pendiente</button>
+                </div>
+            </section>
+        </div>
+        <button type="button" class="floating-action" aria-label="Agregar material o pendiente" aria-haspopup="dialog" onclick="openActionsModal()">+</button>
+
+        <!-- =================================================================
+             MODAL FULLSCREEN DE INFOGRAFÍA VERTICAL MÓVIL
+        ================================================================== -->
+        <div id="infographic-modal" class="fixed inset-0 z-50 hidden bg-navy-950/90 backdrop-blur-sm flex justify-center">
+            <div class="w-full max-w-[430px] bg-[#f6f3eb] h-full overflow-y-auto flex flex-col shadow-2xl">
+                <!-- Barra superior del modal -->
+                <div class="sticky top-0 z-10 bg-navy-900 text-white px-4 py-3 flex items-center justify-between border-b-2 border-gold-500">
+                    <div>
+                        <span class="text-[10px] uppercase font-bold text-amber-300 block">Esquema Visual Completo</span>
+                        <h3 class="font-serif text-sm font-bold">Infografía (1795268791064.jpg)</h3>
+                    </div>
+                    <button onclick="closeInfographicModal()" class="h-9 px-3 rounded-xl bg-red-600 text-white text-xs font-extrabold flex items-center space-x-1 cursor-pointer">
+                        <span>Cerrar ✕</span>
+                    </button>
+                </div>
+
+                <!-- Contenido vertical con la imagen 1795268791064.jpg y síntesis de respaldo -->
+                <div class="p-4 space-y-4 text-slate-800">
+                    <div class="bg-white rounded-2xl p-3 border border-slate-300 shadow-sm space-y-2">
+                        <div class="flex items-center justify-between text-[11px] text-slate-500 font-semibold">
+                            <span>Ismael Zambrano • C.I. 13.528.514</span>
+                            <button onclick="toggleModalZoom()" id="btn-modal-zoom" type="button" class="px-2.5 py-1 rounded-lg bg-navy-900 text-amber-300 font-bold cursor-pointer">
+                                Zoom 1.4x
+                            </button>
+                        </div>
+                        <div class="overflow-auto rounded-xl border border-slate-200 bg-slate-100">
+                            <img
+                                id="github-infographic-modal"
+                                src="1795268791064.jpg"
+                                data-github-src="https://raw.githubusercontent.com/ismaelzambrano/delitos-economicos-empresa/main/1795268791064.jpg"
+                                alt="Infografía Completa Delitos Económicos en el Ámbito de la Empresa"
+                                onerror="handleInfographicModalError(this)"
+                                class="w-full h-auto object-contain block transition-transform duration-200 origin-top"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Bloque I Infografía -->
+                    <div class="bg-white rounded-2xl p-4 border border-slate-300 space-y-2">
+                        <h5 class="font-serif text-xs font-black text-navy-900 uppercase border-b border-slate-200 pb-1.5">
+                            I. MARCO NORMATIVO (LOCDOFT, CP, GAFI)
+                        </h5>
+                        <div class="space-y-2 text-xs">
+                            <div class="flex items-start space-x-2">
+                                <span class="text-navy-900 font-bold">📄</span>
+                                <span><strong>Ley Orgánica Contra la Delincuencia Organizada y Financiamiento al Terrorismo (LOCDOFT)</strong></span>
+                            </div>
+                            <div class="flex items-start space-x-2">
+                                <span class="text-navy-900 font-bold">⚖️</span>
+                                <span><strong>Código Penal (CP)</strong></span>
+                            </div>
+                            <div class="flex items-start space-x-2">
+                                <span class="text-navy-900 font-bold">🛡️</span>
+                                <span><strong>Recomendaciones del Grupo de Acción Financiera Internacional (GAFI)</strong></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bloque II Infografía -->
+                    <div class="bg-white rounded-2xl p-4 border border-slate-300 space-y-2.5">
+                        <h5 class="font-serif text-xs font-black text-navy-900 uppercase border-b border-slate-200 pb-1.5">
+                            II. EVOLUCIÓN DEL DELITO EN LA EMPRESA
+                        </h5>
+                        <div class="flex flex-col items-center space-y-1.5 text-center text-xs font-bold">
+                            <div class="w-full bg-slate-100 p-2.5 rounded-xl border border-slate-300">
+                                💼 Fraude inicial básico
+                            </div>
+                            <div class="text-navy-900 font-black">⬇</div>
+                            <div class="w-full bg-slate-100 p-2.5 rounded-xl border border-slate-300">
+                                🏢 Proceso complejo estructurado
+                            </div>
+                            <div class="text-navy-900 font-black">⬇</div>
+                            <div class="w-full bg-navy-900 text-amber-300 p-2.5 rounded-xl">
+                                🌐 Impacto financiero global
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bloque III Infografía -->
+                    <div class="bg-white rounded-2xl p-4 border border-slate-300 space-y-2.5">
+                        <h5 class="font-serif text-xs font-black text-navy-900 uppercase border-b border-slate-200 pb-1.5">
+                            III. DELINCUENCIA ORGANIZADA, ASOCIACIÓN, LEGITIMACIÓN Y AGAVILLAMIENTO
+                        </h5>
+                        <div class="grid grid-cols-1 gap-2 text-xs">
+                            <div class="bg-slate-100 p-2.5 rounded-xl border border-slate-200">
+                                <strong class="text-navy-900 block">DELINCUENCIA ORGANIZADA:</strong>
+                                Estructura criminal para cometer delitos graves y obtener beneficios.
+                            </div>
+                            <div class="bg-slate-100 p-2.5 rounded-xl border border-slate-200">
+                                <strong class="text-navy-900 block">ASOCIACIÓN:</strong>
+                                Unión de dos o más personas para delinquir de forma permanente.
+                            </div>
+                            <div class="bg-slate-100 p-2.5 rounded-xl border border-slate-200">
+                                <strong class="text-navy-900 block">LEGITIMACIÓN (de Capitales):</strong>
+                                Proceso de dar apariencia legal a fondos de origen ilícito.
+                            </div>
+                            <div class="bg-slate-100 p-2.5 rounded-xl border border-slate-200">
+                                <strong class="text-navy-900 block">AGAVILLAMIENTO:</strong>
+                                Concierto de personas para cometer delitos de forma planificada.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bloque IV Infografía -->
+                    <div class="bg-white rounded-2xl p-4 border border-slate-300 space-y-2">
+                        <h5 class="font-serif text-xs font-black text-navy-900 uppercase border-b border-slate-200 pb-1.5">
+                            IV. FINANCIAMIENTO AL TERRORISMO
+                        </h5>
+                        <p class="text-xs text-slate-700 leading-relaxed">
+                            Los crímenes económicos y canales financieros corporativos pueden subvertirse para financiar actividades terroristas.
+                        </p>
+                        <div class="flex flex-col space-y-1.5 pt-1 text-xs font-bold">
+                            <span class="bg-red-50 text-red-800 border border-red-200 px-3 py-1.5 rounded-lg">• Nexos con el Crimen Organizado</span>
+                            <span class="bg-amber-50 text-amber-900 border border-amber-200 px-3 py-1.5 rounded-lg">• Canales Financieros Ilícitos</span>
+                            <span class="bg-slate-100 text-navy-900 border border-slate-300 px-3 py-1.5 rounded-lg">• Responsabilidad de la Empresa</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- =====================================================================
+         JAVASCRIPT DE INTERACTIVIDAD MOBILE-FIRST
+    ====================================================================== -->
+    <script>
+        const curricularUnits = [
+            {
+                id: 'delitos-economicos',
+                nombre: 'Delitos Económicos en el Ámbito de la Empresa',
+                nombreCorto: 'Delitos Económicos',
+                diasClase: 'Lunes',
+                profesor: 'Prof. Carlos Romero / Nueva Profesora',
+                horario: 'Lunes | 6:00 PM - 7:30 PM (2 Horas)',
+                aula: 'CH7-D (Piso 7)',
+                recursos: [
+                    { id: 'marco-normativo', tipo: 'escrito', titulo: 'Marco normativo y conceptos', descripcion: 'LOCDOFT, Código Penal y recomendaciones GAFI.', fechaSubida: '2026-11-21', urlOContenido: 'tab-1', modulo: 1 },
+                    { id: 'evolucion-delito', tipo: 'escrito', titulo: 'Evolución del delito en la empresa', descripcion: 'Desarrollo de las cuatro fases y su impacto empresarial.', fechaSubida: '2026-11-21', urlOContenido: 'tab-2', modulo: 2 },
+                    { id: 'vinculo-conceptual', tipo: 'escrito', titulo: 'Vínculo conceptual y comparador', descripcion: 'Delincuencia organizada, asociación, legitimación y agavillamiento.', fechaSubida: '2026-11-21', urlOContenido: 'tab-3', modulo: 3 },
+                    { id: 'financiamiento-terrorismo', tipo: 'info', titulo: 'Financiamiento al terrorismo', descripcion: 'Origen y destino de los fondos, actores y riesgos empresariales.', fechaSubida: '2026-11-21', urlOContenido: 'tab-4', modulo: 4 },
+                    { id: 'jurisprudencia-tsj', tipo: 'escrito', titulo: 'Jurisprudencia TSJ y materiales', descripcion: 'Análisis de sentencias, infografía oficial y recursos relacionados.', fechaSubida: '2026-11-21', urlOContenido: 'tab-5', modulo: 5 },
+                    { id: 'infografia-oficial', tipo: 'info', titulo: 'Infografía oficial', descripcion: 'Síntesis visual de los cinco ejes de la unidad curricular.', fechaSubida: '2026-11-21', urlOContenido: 'tab-5', modulo: 5, scrollTarget: 'github-infographic-main' },
+                    { id: 'grabacion-exposicion', tipo: 'grabacion', titulo: 'Material audiovisual relacionado', descripcion: 'Grabación vinculada con la exposición y el cumplimiento normativo.', fechaSubida: '2026-11-21', urlOContenido: 'tab-5', modulo: 5, scrollTarget: 'github-whatsapp-video' }
+                ],
+                pendientes: []
+            },
+            {
+                id: 'proteccion-ambiente',
+                nombre: 'Protección Jurídica del Medio Ambiente',
+                nombreCorto: 'Medio Ambiente',
+                diasClase: 'Lunes',
+                profesor: 'Prof. Yesenia Azuaje',
+                horario: 'Lunes | 7:30 PM - 9:00 PM (2 Horas)',
+                aula: 'CH7-D (Piso 7)',
+                recursos: [],
+                pendientes: []
+            },
+            {
+                id: 'resolucion-conflictos',
+                nombre: 'Resolución Judicial del Conflicto',
+                nombreCorto: 'Resolución del Conflicto',
+                diasClase: 'Martes',
+                profesor: 'Prof. Julian Matute',
+                horario: 'Martes | 6:00 PM - 8:15 PM (3 Horas)',
+                aula: 'CH7-D (Piso 7)',
+                recursos: [],
+                pendientes: []
+            },
+            {
+                id: 'proyecto-iv',
+                nombre: 'Proyecto IV: Justicia Comunitaria',
+                nombreCorto: 'Proyecto IV',
+                diasClase: 'Miércoles / Sábado',
+                profesor: 'Prof. Yajaira Prim',
+                horario: 'Miércoles (Teoría 2h: 6:00 PM - 7:30 PM) y Sábado (Práctica 6h: 7:30 AM - 12:00 PM)',
+                aula: 'CH7-D / Comunidad',
+                recursos: [],
+                pendientes: []
+            },
+            {
+                id: 'amparo-constitucional',
+                nombre: 'Electiva: Amparo Constitucional',
+                nombreCorto: 'Amparo Constitucional',
+                diasClase: 'Miércoles',
+                profesor: 'Prof. Eugenio Herrera',
+                horario: 'Miércoles | 7:30 PM - 9:00 PM (2 Horas)',
+                aula: 'CH7-D (Piso 7)',
+                recursos: [],
+                pendientes: []
+            },
+            {
+                id: 'propiedad-derecho',
+                nombre: 'Propiedad y Derecho',
+                nombreCorto: 'Propiedad y Derecho',
+                diasClase: 'Jueves',
+                profesor: 'Prof. Luis Decimavilla',
+                horario: 'Jueves | 6:00 PM - 8:15 PM (3 Horas)',
+                aula: 'CH7-D (Piso 7)',
+                recursos: [],
+                pendientes: []
+            },
+            {
+                id: 'acompanamiento-comunitario',
+                nombre: 'Acompañamiento Socio-Comunitario',
+                nombreCorto: 'Acomp. Socio-Comunitario',
+                diasClase: 'Viernes',
+                profesor: 'Prof. Yldemaro Torres',
+                horario: 'Viernes | 6:00 PM - 7:30 PM (2 Horas)',
+                aula: 'CH7-D (Piso 7)',
+                recursos: [],
+                pendientes: []
+            }
+        ];
+
+        const unitIcons = {
+            grabacion: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="13" height="14" rx="2"/><path d="m16 10 5-3v10l-5-3z"/></svg>',
+            escrito: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8m-8 4h8"/></svg>',
+            info: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4m0-4h.01"/></svg>'
+        };
+        let activeUnitId = curricularUnits[0].id;
+        let activeResourceFilter = 'todo';
+        let activeResourceId = '';
+
+        function escapeHTML(value) {
+            return String(value || '').replace(/[&<>"']/g, character => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            })[character]);
+        }
+
+        function getActiveUnit() {
+            return curricularUnits.find(unit => unit.id === activeUnitId);
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'Sin fecha';
+            const date = new Date(`${dateString}T00:00:00`);
+            return Number.isNaN(date.getTime()) ? 'Sin fecha' : new Intl.DateTimeFormat('es-VE', { day: 'numeric', month: 'short', year: 'numeric' }).format(date);
+        }
+
+        function persistCourseData() {
+            try {
+                const userData = curricularUnits.map(unit => ({
+                    id: unit.id,
+                    recursos: unit.recursos,
+                    pendientes: unit.pendientes
+                }));
+                localStorage.setItem('aula-virtual-user-data', JSON.stringify(userData));
+            } catch (error) {
+                console.error('No se pudieron guardar los cambios del aula virtual.', error);
+                announce('No se pudieron guardar los cambios en este navegador.');
+            }
+        }
+
+        function restoreCourseData() {
+            try {
+                const stored = JSON.parse(localStorage.getItem('aula-virtual-user-data') || '[]');
+                if (!Array.isArray(stored)) throw new Error('El formato guardado no es válido.');
+                stored.forEach(savedUnit => {
+                    const unit = curricularUnits.find(item => item.id === savedUnit.id);
+                    if (!unit) return;
+                    if (Array.isArray(savedUnit.recursos)) savedUnit.recursos.forEach(resource => {
+                        if (!resource || !resource.id || !resource.titulo) return;
+                        const index = unit.recursos.findIndex(item => item.id === resource.id);
+                        if (index < 0) unit.recursos.push(resource);
+                        else unit.recursos[index] = { ...unit.recursos[index], ...resource };
+                    });
+                    if (Array.isArray(savedUnit.pendientes)) savedUnit.pendientes.forEach(activity => {
+                        if (!activity || !activity.id || !activity.titulo) return;
+                        if (activity.id === 'actividad-analisis' || activity.id === 'evaluacion-modulo') return;
+                        const index = unit.pendientes.findIndex(item => item.id === activity.id);
+                        if (index < 0) unit.pendientes.push(activity);
+                        else unit.pendientes[index] = { ...unit.pendientes[index], ...activity };
+                    });
+                });
+            } catch (error) {
+                console.error('No se pudieron recuperar los datos guardados del aula virtual.', error);
+                announce('Los datos guardados no se pudieron leer; se muestran los materiales iniciales.');
+            }
+        }
+
+        function announce(message) {
+            let notice = document.getElementById('app-notice');
+            if (!notice) {
+                notice = document.createElement('div');
+                notice.id = 'app-notice';
+                notice.className = 'fixed left-1/2 top-20 z-[80] -translate-x-1/2 rounded-xl bg-[#8B1E3F] px-4 py-3 text-sm font-semibold text-white shadow-xl';
+                notice.setAttribute('role', 'status');
+                document.body.appendChild(notice);
+            }
+            notice.textContent = message;
+            notice.classList.remove('hidden');
+            window.clearTimeout(notice.hideTimeout);
+            notice.hideTimeout = window.setTimeout(() => notice.classList.add('hidden'), 3600);
+        }
+
+        function renderUnitList() {
+            document.getElementById('drawer-active-course').textContent = getActiveUnit().nombreCorto;
+            document.getElementById('unit-list').innerHTML = curricularUnits.map(unit => `
+                <button type="button" class="unit-button ${unit.id === activeUnitId ? 'active' : ''}" onclick="selectUnit('${escapeHTML(unit.id)}')">
+                    <span class="flex items-start gap-3">
+                        <span class="mt-0.5 text-[#8B1E3F]">${unitIcons.escrito}</span>
+                        <span class="min-w-0"><span class="block text-sm leading-snug">${escapeHTML(unit.nombre)}</span><span class="block mt-1 text-[10px] text-slate-500">${escapeHTML(unit.diasClase)} · ${unit.recursos.length} materiales</span></span>
+                    </span>
+                </button>`).join('');
+        }
+
+        function renderModuleList() {
+            const unit = getActiveUnit();
+            document.getElementById('module-list').innerHTML = unit.recursos.map(resource => `
+                <button type="button" class="module-button text-xs leading-snug ${resource.id === activeResourceId ? 'active' : ''}" onclick="openResource('${escapeHTML(resource.id)}')">
+                    <span class="flex items-center gap-2"><span class="shrink-0">${unitIcons[resource.tipo] || unitIcons.info}</span><span>${escapeHTML(resource.titulo)}</span></span>
+                </button>`).join('');
+        }
+
+        function renderResources() {
+            const unit = getActiveUnit();
+            const resources = unit.recursos.filter(resource => activeResourceFilter === 'todo' || resource.tipo === activeResourceFilter);
+            document.getElementById('resource-count').textContent = resources.length;
+            document.getElementById('resource-list').innerHTML = resources.length
+                ? resources.map(resource => `
+                    <button type="button" class="resource-card" onclick="openResource('${escapeHTML(resource.id)}')">
+                        <span class="flex items-start justify-between gap-3">
+                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#edf2f8] text-[#0F2C59]">${unitIcons[resource.tipo] || unitIcons.info}</span>
+                            <span class="rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-slate-600">${resource.tipo === 'escrito' ? 'Documento' : resource.tipo === 'grabacion' ? 'Grabación' : 'Información'}</span>
+                        </span>
+                        <span class="mt-4 block font-bold text-sm text-slate-900">${escapeHTML(resource.titulo)}</span>
+                        <span class="mt-1.5 block min-h-10 text-xs leading-relaxed text-slate-500">${escapeHTML(resource.descripcion || 'Material de la unidad curricular.')}</span>
+                        <span class="mt-4 flex items-center justify-between border-t border-slate-100 pt-3 text-[10px] text-slate-500"><span>Subido ${formatDate(resource.fechaSubida)}</span><span class="font-bold text-[#0F2C59]">Abrir →</span></span>
+                    </button>`).join('')
+                : '<div class="panel-card p-6 text-sm text-slate-500 sm:col-span-2 xl:col-span-3">No hay materiales en este filtro. Puedes agregar uno nuevo.</div>';
+        }
+
+        function updatePendingCount() {
+            const pending = getActiveUnit().pendientes.filter(item => !item.completado).length;
+            document.getElementById('pending-count').textContent = pending;
+        }
+
+        function selectUnit(unitId) {
+            if (!curricularUnits.some(unit => unit.id === unitId)) return;
+            activeUnitId = unitId;
+            activeResourceFilter = 'todo';
+            document.querySelectorAll('.filter-button').forEach(button => button.classList.toggle('active', button.dataset.filter === 'todo'));
+            document.getElementById('active-course-short').textContent = getActiveUnit().nombreCorto;
+            document.getElementById('course-title').textContent = getActiveUnit().nombre;
+            document.getElementById('course-meta').innerHTML = `<span>Docente: ${escapeHTML(getActiveUnit().profesor)}</span><span>Horario: ${escapeHTML(getActiveUnit().horario)}</span><span>Aula: ${escapeHTML(getActiveUnit().aula)}</span>`;
+            document.getElementById('course-dashboard').classList.remove('hidden');
+            document.getElementById('module-content').classList.add('hidden');
+            document.body.classList.remove('module-open');
+            document.querySelector('.old-module-nav').classList.add('hidden');
+            document.querySelectorAll('[id^="tab-"]').forEach(panel => panel.classList.add('hidden'));
+            renderUnitList();
+            renderModuleList();
+            renderResources();
+            updatePendingCount();
+            toggleSidebar(false);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function filterResources(filter, button) {
+            activeResourceFilter = filter;
+            document.querySelectorAll('.filter-button').forEach(item => item.classList.toggle('active', item === button));
+            renderResources();
+        }
+
+        function openResource(resourceId) {
+            const unit = getActiveUnit();
+            const resource = unit.recursos.find(item => item.id === resourceId);
+            if (!resource) return;
+            activeResourceId = resource.id;
+            document.getElementById('course-dashboard').classList.add('hidden');
+            document.getElementById('module-content').classList.remove('hidden');
+            document.body.classList.toggle('module-open', unit.id === curricularUnits[0].id && Boolean(resource.modulo));
+            document.getElementById('module-context').innerHTML = `
+                <div class="course-heading p-4 sm:p-5"><p class="text-[10px] uppercase tracking-widest font-extrabold text-[#8B1E3F]">${escapeHTML(unit.nombre)}</p><h2 class="mt-1 font-bold text-lg">${escapeHTML(resource.titulo)}</h2><p class="mt-1 text-sm text-slate-500">${escapeHTML(resource.descripcion || '')}</p></div>`;
+            const placeholder = document.getElementById('module-placeholder');
+            if (unit.id === curricularUnits[0].id && resource.modulo) {
+                document.querySelector('.old-module-nav').classList.remove('hidden');
+                placeholder.classList.add('hidden');
+                switchMobileTab(resource.modulo, false);
+                if (resource.scrollTarget) {
+                    window.setTimeout(() => document.getElementById(resource.scrollTarget)?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+                } else {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            } else {
+                document.querySelector('.old-module-nav').classList.add('hidden');
+                document.querySelectorAll('[id^="tab-"]').forEach(panel => panel.classList.add('hidden'));
+                const hasRemoteUrl = /^https?:\/\//i.test(resource.urlOContenido || '');
+                const audioPreview = resource.tipo === 'grabacion' && hasRemoteUrl
+                    ? `<audio class="mt-4 w-full" controls preload="none" aria-label="Reproducir ${escapeHTML(resource.titulo)}"><source src="${escapeHTML(resource.urlOContenido)}"></audio>`
+                    : '';
+                const resourceLink = hasRemoteUrl && resource.tipo !== 'grabacion'
+                    ? `<a class="mt-4 inline-flex min-h-11 items-center font-bold text-[#0F2C59] underline" href="${escapeHTML(resource.urlOContenido)}" target="_blank" rel="noopener noreferrer">Abrir recurso ↗</a>`
+                    : '';
+                placeholder.innerHTML = `<article class="panel-card p-4"><p class="text-sm leading-relaxed text-slate-600">${escapeHTML(resource.descripcion || 'Agrega aquí la descripción de este material.')}</p>${audioPreview}${resourceLink}</article>`;
+                placeholder.classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+            renderModuleList();
+            toggleSidebar(false);
+        }
+
+        function showResourceLibrary() {
+            document.body.classList.remove('module-open');
+            document.querySelector('.old-module-nav').classList.add('hidden');
+            document.getElementById('module-content').classList.add('hidden');
+            document.getElementById('course-dashboard').classList.remove('hidden');
+            document.querySelectorAll('[id^="tab-"]').forEach(panel => panel.classList.add('hidden'));
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleSidebar(force) {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebar-backdrop');
+            const shouldOpen = typeof force === 'boolean' ? force : !sidebar.classList.contains('open');
+            sidebar.classList.toggle('open', shouldOpen);
+            backdrop.classList.toggle('visible', shouldOpen);
+            document.getElementById('menu-toggle').setAttribute('aria-expanded', String(shouldOpen));
+            document.body.style.overflow = shouldOpen ? 'hidden' : '';
+            if (shouldOpen) {
+                const firstUnit = document.querySelector('#unit-list button');
+                if (firstUnit) firstUnit.focus({ preventScroll: true });
+            }
+        }
+
+        function updateClock() {
+            const fullValue = new Intl.DateTimeFormat('es-VE', {
+                weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+                hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
+            }).format(new Date());
+            const now = new Date();
+            const dateParts = new Intl.DateTimeFormat('es-VE', { day: '2-digit', month: 'short' }).formatToParts(now);
+            const day = dateParts.find(part => part.type === 'day').value;
+            const month = dateParts.find(part => part.type === 'month').value.replace('.', '');
+            const compactDate = `${day} ${month.charAt(0).toUpperCase()}${month.slice(1)}`;
+            const compactTime = new Intl.DateTimeFormat('en-US', {
+                hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
+            }).format(now);
+            const clock = document.getElementById('live-clock');
+            clock.textContent = `${compactDate} | ${compactTime}`;
+            clock.title = fullValue;
+        }
+
+        function toggleTheme() {
+            const isDark = document.body.classList.toggle('dark');
+            const button = document.getElementById('theme-toggle');
+            button.setAttribute('aria-label', isDark ? 'Activar tema claro' : 'Activar tema oscuro');
+            button.setAttribute('aria-pressed', String(isDark));
+            button.title = isDark ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro';
+            document.getElementById('theme-icon').innerHTML = isDark
+                ? '<path d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13Z"/>'
+                : '<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/>';
+            try {
+                localStorage.setItem('aula-virtual-theme', isDark ? 'dark' : 'light');
+            } catch (error) {
+                console.error('No se pudo guardar la preferencia del tema.', error);
+            }
+        }
+
+        function loadTheme() {
+            try {
+                if (localStorage.getItem('aula-virtual-theme') === 'dark') {
+                    document.body.classList.add('dark');
+                    document.getElementById('theme-toggle').setAttribute('aria-label', 'Activar tema claro');
+                    document.getElementById('theme-toggle').setAttribute('aria-pressed', 'true');
+                    document.getElementById('theme-toggle').title = 'Cambiar a tema claro';
+                    document.getElementById('theme-icon').innerHTML = '<path d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13Z"/>';
+                }
+            } catch (error) {
+                console.error('No se pudo recuperar la preferencia del tema.', error);
+            }
+        }
+
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+            if (!document.querySelector('.modal-overlay:not(.hidden)')) document.body.style.overflow = '';
+        }
+
+        function openPendingModal() {
+            renderPendingList();
+            openModal('pending-modal');
+        }
+
+        function openActionsModal() {
+            openModal('actions-modal');
+        }
+
+        function startAddResource() {
+            closeModal('actions-modal');
+            openResourceModal();
+        }
+
+        function startAddPending() {
+            closeModal('actions-modal');
+            document.getElementById('pending-form').reset();
+            document.getElementById('pending-form-error').classList.add('hidden');
+            openModal('pending-form-modal');
+        }
+
+        function renderPendingList() {
+            const pending = getActiveUnit().pendientes;
+            const container = document.getElementById('pending-list');
+            container.innerHTML = pending.length ? pending.map(item => `
+                <article class="rounded-xl border border-slate-200 p-4">
+                    <div class="flex items-start justify-between gap-3">
+                        <div><span class="text-[10px] font-extrabold uppercase tracking-wider text-[#8B1E3F]">${escapeHTML(item.tipo)}</span><h3 class="mt-1 font-bold text-sm">${escapeHTML(item.titulo)}</h3><p class="mt-1 text-xs text-slate-500">Fecha: ${formatDate(item.fechaEntrega)}</p></div>
+                        <button type="button" onclick="togglePendingStatus('${escapeHTML(item.id)}')" class="rounded-full px-2.5 py-1 text-[10px] font-bold ${item.completado ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-900'}" aria-label="${item.completado ? 'Marcar como pendiente' : 'Marcar como completado'}">${item.completado ? 'Completado' : 'Pendiente'}</button>
+                    </div>
+                </article>`).join('') : '<p class="rounded-xl bg-slate-50 p-5 text-sm text-slate-500">No hay evaluaciones registradas para esta unidad.</p>';
+            updatePendingCount();
+        }
+
+        function togglePendingStatus(itemId) {
+            const item = getActiveUnit().pendientes.find(activity => activity.id === itemId);
+            if (!item) return;
+            item.completado = !item.completado;
+            persistCourseData();
+            renderPendingList();
+        }
+
+        function openResourceModal() {
+            document.getElementById('resource-form').reset();
+            document.getElementById('resource-form-error').classList.add('hidden');
+            openModal('resource-modal');
+        }
+
+        function openPendingForm() {
+            document.getElementById('pending-form').reset();
+            document.getElementById('pending-form-error').classList.add('hidden');
+            closeModal('pending-modal');
+            openModal('pending-form-modal');
+        }
+
+        function bindCourseForms() {
+            document.getElementById('resource-form').addEventListener('submit', event => {
+                event.preventDefault();
+                const form = event.currentTarget;
+                const values = new FormData(form);
+                const url = String(values.get('urlOContenido') || '').trim();
+                if (url && !/^https?:\/\//i.test(url)) {
+                    const error = document.getElementById('resource-form-error');
+                    error.textContent = 'El enlace debe comenzar con http:// o https://.';
+                    error.classList.remove('hidden');
+                    return;
+                }
+                getActiveUnit().recursos.push({
+                    id: `user-resource-${Date.now()}`,
+                    tipo: String(values.get('tipo')),
+                    titulo: String(values.get('titulo')).trim(),
+                    descripcion: String(values.get('descripcion') || '').trim(),
+                    fechaSubida: new Date().toISOString().slice(0, 10),
+                    urlOContenido: url,
+                    userAdded: true
+                });
+                persistCourseData();
+                renderUnitList();
+                renderModuleList();
+                renderResources();
+                closeModal('resource-modal');
+                announce('Material agregado a la unidad curricular.');
+            });
+            document.getElementById('pending-form').addEventListener('submit', event => {
+                event.preventDefault();
+                const values = new FormData(event.currentTarget);
+                getActiveUnit().pendientes.push({
+                    id: `user-pending-${Date.now()}`,
+                    tipo: String(values.get('tipo')),
+                    titulo: String(values.get('titulo')).trim(),
+                    fechaEntrega: String(values.get('fechaEntrega')),
+                    completado: false,
+                    userAdded: true
+                });
+                persistCourseData();
+                renderPendingList();
+                closeModal('pending-form-modal');
+                announce('Actividad agregada al cronograma.');
+            });
+        }
+
+        window.addEventListener('keydown', event => {
+            if (event.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay:not(.hidden)').forEach(modal => closeModal(modal.id));
+                toggleSidebar(false);
+            }
+        });
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchStartedInDrawer = false;
+        document.addEventListener('touchstart', event => {
+            if (!event.changedTouches.length) return;
+            touchStartX = event.changedTouches[0].clientX;
+            touchStartY = event.changedTouches[0].clientY;
+            touchStartedInDrawer = Boolean(event.target.closest && event.target.closest('#sidebar'));
+        }, { passive: true });
+        document.addEventListener('touchend', event => {
+            if (!event.changedTouches.length) return;
+            const deltaX = event.changedTouches[0].clientX - touchStartX;
+            const deltaY = event.changedTouches[0].clientY - touchStartY;
+            if (Math.abs(deltaY) > 80) return;
+            if (touchStartX <= 22 && deltaX >= 70) toggleSidebar(true);
+            else if (touchStartedInDrawer && deltaX <= -70) toggleSidebar(false);
+        }, { passive: true });
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', event => {
+                if (event.target === overlay) closeModal(overlay.id);
+            });
+        });
+
+        // 1. DATOS EXACTOS DE LA SECCIÓN I (MARCO NORMATIVO Y CONCEPTOS)
+        const normsData = [
+            {
+                id: 'n1',
+                group: 'locdoft',
+                tag: 'Art. 4, num. 9 LOCDOFT',
+                title: 'Delincuencia Organizada',
+                text: 'Se refiere a la actuación estructurada de un grupo (o incluso de una sola persona actuando como órgano de una persona jurídica o asociativa) orientada a cometer delitos graves previstos en la ley, buscando obtener beneficios (económicos, de poder o materiales).'
+            },
+            {
+                id: 'n2',
+                group: 'locdoft',
+                tag: 'Art. 37 LOCDOFT',
+                title: 'Asociación',
+                text: 'Sanciona a quien forme parte de un grupo de delincuencia organizada con el fin de cometer uno o más delitos graves, bastando el solo hecho de la asociación para configurar el tipo penal.'
+            },
+            {
+                id: 'n3',
+                group: 'cp',
+                tag: 'Código Penal, Art. 286',
+                title: 'Agavillamiento',
+                text: 'Figura clásica del derecho penal común cuando dos o más personas se asocian para cometer delitos. En la práctica doctrinal y forense, se analiza frente a la asociación del Art. 37 de la LOCDOFT por su ámbito de aplicación, la gravedad de los delitos perseguidos y la escala de las penas.'
+            },
+            {
+                id: 'n4',
+                group: 'locdoft',
+                tag: 'LOCDOFT / TSJ Sent. N° 6',
+                title: 'Legitimación de Capitales',
+                text: 'Es el proceso de ocultar, disfrazar o dar apariencia de legalidad a bienes, fondos o haberes provenientes de actividades ilícitas, permitiendo que entren al circuito económico o financiero formal.'
+            },
+            {
+                id: 'n5',
+                group: 'locdoft',
+                tag: 'Art. 52 LOCDOFT',
+                title: 'Terrorismo y Acto Terrorista',
+                text: 'El Art. 52 tipifica el delito de terrorismo cometido por un terrorista individual o mediante una organización terrorista al realizar o intentar realizar actos terroristas. Son conductas ejecutadas por medios graves (atentados contra la vida o integridad, secuestros, explosiones, liberación de sustancias peligrosas o interrupción de servicios o recursos vitales) con fines como intimidar a la población o alterar/desestabilizar el orden institucional, económico o social.'
+            },
+            {
+                id: 'n6',
+                group: 'locdoft',
+                tag: 'LOCDOFT',
+                title: 'Financiamiento al Terrorismo',
+                text: 'Consiste en proporcionar, facilitar, resguardar, administrar, recolectar o aportar fondos o recursos (lícitos o ilícitos) por cualquier medio, directa o indirectamente, sabiendo o con el propósito de que sean usados por un terrorista o grupo terrorista, o para cometer actos terroristas.'
+            },
+            {
+                id: 'n7',
+                group: 'gafi',
+                tag: 'Estándares Internacionales • 40 Recomendaciones',
+                title: 'Recomendaciones del GAFI (7 Bloques Temáticos)',
+                text: 'Reglas del Grupo de Acción Financiera Internacional contra el lavado de activos, el financiamiento al terrorismo y el financiamiento de la proliferación de armas de destrucción masiva. Exigen a los Estados tipificar estos delitos, aplicar medidas de debida diligencia a los sujetos obligados, identificar beneficiarios finales y mantener cooperación internacional.',
+                isGafiMaster: true
+            }
+        ];
+
+        // 7 GRANDES BLOQUES TEMÁTICOS DE LAS RECOMENDACIONES DEL GAFI
+        const gafiBlocksData = [
+            {
+                id: 'gafi-b1',
+                range: 'R. 1 – 2',
+                title: '1. Políticas y coordinación',
+                intro: '',
+                points: [
+                    {
+                        label: 'Enfoque Basado en Riesgo (R. 1):',
+                        detail: 'Los países e instituciones deben identificar, evaluar y entender sus riesgos particulares para aplicar medidas proporcionales (más estrictas donde hay mayor riesgo, simplificadas donde es bajo).'
+                    },
+                    {
+                        label: 'Cooperación nacional (R. 2):',
+                        detail: 'Coordinación interna entre autoridades financieras, policiales, unidades de inteligencia y supervisores.'
+                    }
+                ]
+            },
+            {
+                id: 'gafi-b2',
+                range: 'R. 3 – 4',
+                title: '2. Lavado de activos y decomiso',
+                intro: '',
+                points: [
+                    {
+                        label: 'Tipificación del delito (R. 3):',
+                        detail: 'Penalizar el lavado de activos abarcando la gama más amplia posible de delitos determinantes (narcotráfico, corrupción, fraude, etc.).'
+                    },
+                    {
+                        label: 'Decomiso (R. 4):',
+                        detail: 'Contar con mecanismos legales para congelar, incautar y decomisar bienes ilícitos, incluyendo opciones de decomiso sin condena penal previa cuando corresponda.'
+                    }
+                ]
+            },
+            {
+                id: 'gafi-b3',
+                range: 'R. 5 – 8',
+                title: '3. Financiamiento del terrorismo y de la proliferación',
+                intro: '',
+                points: [
+                    {
+                        label: 'Delito y sanciones dirigidas (R. 5 – 7):',
+                        detail: 'Tipificar el financiamiento al terrorismo y congelar sin demora los activos de personas o entidades designadas por el Consejo de Seguridad de la ONU (incluyendo proliferación de armas de destrucción masiva).'
+                    },
+                    {
+                        label: 'Organizaciones sin fines de lucro (R. 8):',
+                        detail: 'Proteger a las ONG vulnerables para que no sean utilizadas como fachada o desvío de fondos hacia grupos terroristas, sin obstaculizar su labor legítima.'
+                    }
+                ]
+            },
+            {
+                id: 'gafi-b4',
+                range: 'R. 9 – 23',
+                title: '4. Medidas preventivas',
+                intro: 'Es el corazón operativo para bancos, financieras y sectores obligados:',
+                points: [
+                    {
+                        label: 'Secreto bancario (R. 9):',
+                        detail: 'No debe ser un obstáculo para investigar o aplicar estas normas.'
+                    },
+                    {
+                        label: 'Debida Diligencia del Cliente - DDC (R. 10 – 11):',
+                        detail: 'Prohibición de cuentas anónimas, obligación de verificar la identidad real del cliente y conservar registros por al menos 5 años.'
+                    },
+                    {
+                        label: 'Medidas reforzadas (R. 12 – 16):',
+                        detail: 'Controles estrictos para Personas Expuestas Políticamente (PEP), banca corresponsal, remesas, transferencias electrónicas y activos virtuales/criptomonedas (R. 15).'
+                    },
+                    {
+                        label: 'Reporte de Operaciones Sospechosas - ROS (R. 20 – 21):',
+                        detail: 'Obligación de reportar de inmediato cualquier transacción sospechosa a la Unidad de Inteligencia Financiera (UIF), con prohibición absoluta de avisar al cliente (tipping-off).'
+                    },
+                    {
+                        label: 'Sectores no financieros - APNFD (R. 22 – 23):',
+                        detail: 'Extiende las obligaciones de control a casinos, agentes inmobiliarios, comerciantes de metales/piedras preciosas, abogados, notarios y contadores.'
+                    }
+                ]
+            },
+            {
+                id: 'gafi-b5',
+                range: 'R. 24 – 25',
+                title: '5. Transparencia y beneficiario final',
+                intro: '',
+                points: [
+                    {
+                        label: 'Beneficiario Final:',
+                        detail: 'Evitar el uso indebido de empresas fachada y fideicomisos. Exige que las autoridades tengan acceso oportuno y veraz a la identidad del beneficiario final (la persona natural que realmente controla o se beneficia de una sociedad o estructura jurídica).'
+                    }
+                ]
+            },
+            {
+                id: 'gafi-b6',
+                range: 'R. 26 – 35',
+                title: '6. Facultades y responsabilidades de las autoridades',
+                intro: '',
+                points: [
+                    {
+                        label: 'Supervisión, UIF y Sanciones:',
+                        detail: 'Define el rol y las facultades de los entes supervisores (R. 26–28), crea y protege la autonomía operativa de las Unidades de Inteligencia Financiera (R. 29), regula las investigaciones policiales (R. 30–31), controla el transporte transfronterizo de efectivo (R. 32) y exige sanciones proporcionales y disuasivas por incumplimiento (R. 35).'
+                    }
+                ]
+            },
+            {
+                id: 'gafi-b7',
+                range: 'R. 36 – 40',
+                title: '7. Cooperación internacional',
+                intro: '',
+                points: [
+                    {
+                        label: 'Instrumentos y Extradición:',
+                        detail: 'Ratificación de convenciones internacionales (Viena, Palermo, Mérida), asistencia legal mutua ágil, ejecución de órdenes extranjeras de congelamiento/decomiso, extradición (R. 39) e intercambio directo de inteligencia entre homólogos (R. 40).'
+                    }
+                ]
+            }
+        ];
+
+        let allGafiExpanded = false;
+
+        function renderGafiSubAccordions() {
+            return `
+                <div class="mt-3 pt-3 border-t border-slate-200 space-y-2.5">
+                    <div class="flex items-center justify-between gap-2 bg-amber-50/90 border border-amber-200 rounded-xl px-3 py-2">
+                        <div>
+                            <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-800 block">Estructura GAFI</span>
+                            <span class="text-xs font-bold text-navy-900">7 Grandes Bloques Temáticos</span>
+                        </div>
+                        <button onclick="toggleAllGafiBlocks()" id="btn-toggle-all-gafi" class="px-2.5 py-1.5 rounded-lg bg-navy-900 active:bg-navy-800 text-amber-300 text-[11px] font-extrabold shrink-0 transition cursor-pointer">
+                            ${allGafiExpanded ? 'Contraer todos' : 'Expandir todos'}
+                        </button>
+                    </div>
+
+                    <div class="space-y-2">
+                        ${gafiBlocksData.map((blk, bIdx) => {
+                            const isBlkOpen = allGafiExpanded || bIdx === 0;
+                            return `
+                                <div class="rounded-xl border border-slate-200 bg-slate-50/70 overflow-hidden">
+                                    <button onclick="toggleGafiBlock('${blk.id}')" class="w-full p-3 text-left flex items-center justify-between gap-2 active:bg-slate-100 transition cursor-pointer">
+                                        <div class="min-w-0">
+                                            <span class="inline-block text-[10px] font-extrabold px-2 py-0.5 rounded bg-gold-500/20 text-amber-900 border border-amber-400/40 mb-1">
+                                                ${blk.range}
+                                            </span>
+                                            <h4 class="text-xs font-extrabold text-navy-900 leading-snug mobile-text">
+                                                ${blk.title}
+                                            </h4>
+                                        </div>
+                                        <span id="gafi-icon-${blk.id}" class="w-6 h-6 rounded-full bg-white border border-slate-200 text-navy-900 flex items-center justify-center font-black text-xs shrink-0">
+                                            ${isBlkOpen ? '−' : '+'}
+                                        </span>
+                                    </button>
+                                    <div id="gafi-body-${blk.id}" class="gafi-block-body ${isBlkOpen ? '' : 'hidden'} px-3 pb-3 pt-2 bg-white border-t border-slate-200/80 space-y-2 text-xs text-slate-700 leading-relaxed mobile-text">
+                                        ${blk.intro ? `<p class="font-semibold text-navy-900 bg-slate-100 px-2.5 py-1.5 rounded-lg">${blk.intro}</p>` : ''}
+                                        <div class="space-y-2">
+                                            ${blk.points.map(pt => `
+                                                <div class="flex items-start space-x-2">
+                                                    <span class="text-gold-600 font-extrabold mt-0.5 shrink-0">•</span>
+                                                    <div>
+                                                        <strong class="text-navy-900">${pt.label}</strong>
+                                                        <span> ${pt.detail}</span>
+                                                    </div>
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleGafiBlock(id) {
+            const body = document.getElementById(`gafi-body-${id}`);
+            const icon = document.getElementById(`gafi-icon-${id}`);
+            const isHidden = body.classList.contains('hidden');
+            body.classList.toggle('hidden');
+            icon.textContent = isHidden ? '−' : '+';
+        }
+
+        function toggleAllGafiBlocks() {
+            allGafiExpanded = !allGafiExpanded;
+            gafiBlocksData.forEach(blk => {
+                const body = document.getElementById(`gafi-body-${blk.id}`);
+                const icon = document.getElementById(`gafi-icon-${blk.id}`);
+                if (body && icon) {
+                    if (allGafiExpanded) {
+                        body.classList.remove('hidden');
+                        icon.textContent = '−';
+                    } else {
+                        body.classList.add('hidden');
+                        icon.textContent = '+';
+                    }
+                }
+            });
+            const btn = document.getElementById('btn-toggle-all-gafi');
+            if (btn) {
+                btn.textContent = allGafiExpanded ? 'Contraer todos' : 'Expandir todos';
+            }
+        }
+
+        function toggleSentenciaCard(bodyId, iconId, button) {
+            const body = document.getElementById(bodyId);
+            const icon = document.getElementById(iconId);
+            if (!body || !icon) return;
+
+            const isHidden = body.classList.contains('hidden');
+            body.classList.toggle('hidden');
+            icon.textContent = isHidden ? '−' : '+';
+            button.setAttribute('aria-expanded', String(isHidden));
+        }
+
+        function renderNormsAccordion(filter = 'all') {
+            const container = document.getElementById('norms-accordion-list');
+            const items = filter === 'all' ? normsData : normsData.filter(i => i.group === filter);
+
+            container.innerHTML = items.map((item, idx) => {
+                const isOpen = idx === 0 || filter === 'gafi';
+                return `
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                        <button onclick="toggleNormAccordion('${item.id}')" class="w-full p-4 text-left flex items-center justify-between gap-2 active:bg-slate-50 transition cursor-pointer">
+                            <div class="min-w-0">
+                                <span class="inline-block text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-navy-900 text-amber-300 mb-1">
+                                    ${item.tag}
+                                </span>
+                                <h3 class="font-serif text-sm font-bold text-navy-900 leading-snug">
+                                    ${item.title}
+                                </h3>
+                            </div>
+                            <span id="acc-icon-${item.id}" class="w-7 h-7 rounded-full bg-slate-100 text-navy-900 flex items-center justify-center font-extrabold text-sm shrink-0">
+                                ${isOpen ? '−' : '+'}
+                            </span>
+                        </button>
+                        <div id="acc-body-${item.id}" class="${isOpen ? '' : 'hidden'} px-4 pb-4 pt-2 border-t border-slate-100 text-xs text-slate-700 leading-relaxed mobile-text">
+                            <p>${item.text}</p>
+                            ${item.isGafiMaster ? renderGafiSubAccordions() : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleNormAccordion(id) {
+            const body = document.getElementById(`acc-body-${id}`);
+            const icon = document.getElementById(`acc-icon-${id}`);
+            const isHidden = body.classList.contains('hidden');
+            body.classList.toggle('hidden');
+            icon.textContent = isHidden ? '−' : '+';
+        }
+
+        function filterNorms(group) {
+            document.querySelectorAll('.norm-filter').forEach(btn => {
+                btn.className = 'norm-filter px-3 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 shrink-0 cursor-pointer';
+            });
+            document.getElementById(`nf-${group}`).className = 'norm-filter px-3 py-1.5 rounded-full text-xs font-bold bg-navy-900 text-white shrink-0 cursor-pointer';
+            renderNormsAccordion(group);
+        }
+
+        // 2. DATOS DE LA SECCIÓN II (4 FASES DE EVOLUCIÓN EN LA EMPRESA)
+        const evoPhases = [
+            {
+                badge: 'Fase 1 de 4 • El Inicio',
+                title: '1. La grieta o el origen ilícito',
+                desc: 'Todo arranca con una conducta irregular o ilícita inicial dentro o a través de una empresa que vulnera las normas contables, fiscales o cambiarias:',
+                bullets: [
+                    'Facturación falsa o simulada',
+                    'Contrabando y evasión fiscal',
+                    'Desvío de fondos públicos o estafa corporativa',
+                    'Uso indebido de divisas o recursos de origen criminal'
+                ]
+            },
+            {
+                badge: 'Fase 2 de 4 • Organización',
+                title: '2. La estructuración y reparto de roles',
+                desc: 'Para que la maniobra no sea un simple hecho aislado y pase desapercibida ante controles internos, auditorías o entes reguladores, se organiza una red con funciones definidas:',
+                bullets: [
+                    'Quién firma y autoriza operaciones',
+                    'Quién mueve el dinero en cuentas',
+                    'Quién crea empresas de fachada',
+                    'Quién presta su nombre como testaferro'
+                ]
+            },
+            {
+                badge: 'Fase 3 de 4 • Blanqueo',
+                title: '3. La legitimación de los capitales obtenidos',
+                desc: 'Las ganancias ilícitas generadas se mezclan con la operativa mercantil ordinaria para darles apariencia legítima y poder usarlas o invertirlas sin levantar sospechas inmediatas:',
+                bullets: [
+                    'Uso de comercios e importadoras',
+                    'Inversión en constructoras y bienes',
+                    'Movimientos financieros aparentemente ordinarios',
+                    'Integración al circuito económico formal'
+                ]
+            },
+            {
+                badge: 'Fase 4 de 4 • Escalamiento',
+                title: '4. El escalamiento a delitos de alto nivel',
+                desc: 'Cuando la estructura ya tiene control operativo, capacidad financiera y cobertura corporativa, puede derivar en delitos de mayor gravedad o impacto sistémico:',
+                bullets: [
+                    'Corrupción a gran escala',
+                    'Redes transnacionales de lavado',
+                    'Afectación severa al orden económico',
+                    'Canalización de recursos hacia estructuras violentas o terroristas'
+                ]
+            }
+        ];
+
+        let activeEvoIndex = 0;
+
+        function selectEvoPhase(idx) {
+            activeEvoIndex = idx;
+            const item = evoPhases[idx];
+
+            document.querySelectorAll('.evo-pill').forEach((pill, i) => {
+                if (i === idx) {
+                    pill.className = 'evo-pill py-2.5 px-1 rounded-xl text-center font-bold text-xs bg-navy-900 text-amber-300 shadow cursor-pointer';
+                } else {
+                    pill.className = 'evo-pill py-2.5 px-1 rounded-xl text-center font-bold text-xs bg-white text-slate-700 border border-slate-200 cursor-pointer';
+                }
+            });
+
+            document.getElementById('evo-mobile-card').innerHTML = `
+                <span class="inline-block text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-amber-100 text-amber-900">
+                    ${item.badge}
+                </span>
+                <h3 class="font-serif text-base font-bold text-navy-900 leading-snug mobile-title">
+                    ${item.title}
+                </h3>
+                <p class="text-xs text-slate-700 leading-relaxed mobile-text">
+                    ${item.desc}
+                </p>
+                <div class="bg-slate-50 rounded-xl p-3 border border-slate-200/80 space-y-1.5">
+                    <span class="text-[10px] font-extrabold uppercase text-gold-600 block">Elementos clave:</span>
+                    ${item.bullets.map(b => `
+                        <div class="flex items-start space-x-2 text-xs text-slate-700 mobile-text">
+                            <span class="text-gold-600 font-bold">▸</span>
+                            <span>${b}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            document.getElementById('evo-prev-btn').disabled = idx === 0;
+            document.getElementById('evo-next-btn').disabled = idx === evoPhases.length - 1;
+        }
+
+        function stepEvoPhase(delta) {
+            const next = activeEvoIndex + delta;
+            if (next >= 0 && next < evoPhases.length) {
+                selectEvoPhase(next);
+            }
+        }
+
+        // 3. COMPARADOR SECCIÓN III
+        function switchCompareTab(mode) {
+            const c1 = document.getElementById('cmp-content-1');
+            const c2 = document.getElementById('cmp-content-2');
+            const t1 = document.getElementById('cmp-tab-1');
+            const t2 = document.getElementById('cmp-tab-2');
+
+            if (mode === 'asoc-vs-agav') {
+                c1.classList.remove('hidden');
+                c2.classList.add('hidden');
+                t1.className = 'py-2 px-2 rounded-lg text-xs font-bold bg-navy-900 text-white shadow transition cursor-pointer';
+                t2.className = 'py-2 px-2 rounded-lg text-xs font-bold text-slate-700 transition cursor-pointer';
+            } else {
+                c2.classList.remove('hidden');
+                c1.classList.add('hidden');
+                t2.className = 'py-2 px-2 rounded-lg text-xs font-bold bg-navy-900 text-white shadow transition cursor-pointer';
+                t1.className = 'py-2 px-2 rounded-lg text-xs font-bold text-slate-700 transition cursor-pointer';
+            }
+        }
+
+        // 4. ACORDEONES DE ACTORES EN FINANCIAMIENTO AL TERRORISMO
+        function toggleMobileActor(id) {
+            const el = document.getElementById(id);
+            const num = id.split('-')[2];
+            const icon = document.getElementById(`m-icon-${num}`);
+            const hidden = el.classList.contains('hidden');
+            el.classList.toggle('hidden');
+            icon.textContent = hidden ? '−' : '+';
+        }
+
+        let modalZoomed = false;
+        function toggleModalZoom() {
+            modalZoomed = !modalZoomed;
+            const img = document.getElementById('github-infographic-modal');
+            const btn = document.getElementById('btn-modal-zoom');
+            if (img) {
+                img.style.transform = modalZoomed ? 'scale(1.4)' : 'scale(1)';
+            }
+            if (btn) {
+                btn.textContent = modalZoomed ? 'Zoom 1.0x' : 'Zoom 1.4x';
+            }
+        }
+
+        // 5. NAVEGACIÓN INFERIOR MÓVIL, TAMAÑO DE FUENTE Y MODAL
+        function switchMobileTab(tabNumber, scrollToTop = true) {
+            if (getActiveUnit().id !== curricularUnits[0].id) return;
+            document.body.classList.add('module-open');
+            document.querySelector('.old-module-nav').classList.remove('hidden');
+            document.getElementById('course-dashboard').classList.add('hidden');
+            document.getElementById('module-content').classList.remove('hidden');
+            document.getElementById('module-placeholder').classList.add('hidden');
+            const matchedResource = getActiveUnit().recursos.find(resource => resource.modulo === tabNumber);
+            if (matchedResource && (!activeResourceId || getActiveUnit().recursos.find(resource => resource.id === activeResourceId)?.modulo !== tabNumber)) {
+                activeResourceId = matchedResource.id;
+                document.getElementById('module-context').innerHTML = `
+                    <div class="course-heading p-4 sm:p-5"><p class="text-[10px] uppercase tracking-widest font-extrabold text-[#8B1E3F]">${escapeHTML(getActiveUnit().nombre)}</p><h2 class="mt-1 font-bold text-lg">${escapeHTML(matchedResource.titulo)}</h2><p class="mt-1 text-sm text-slate-500">${escapeHTML(matchedResource.descripcion)}</p></div>`;
+                renderModuleList();
+            }
+            for (let i = 1; i <= 5; i++) {
+                const panel = document.getElementById(`tab-${i}`);
+                const btn = document.getElementById(`nav-btn-${i}`);
+                const icon = btn.querySelector('svg');
+
+                if (i === tabNumber) {
+                    panel.classList.remove('hidden');
+                    btn.className = 'nav-tab-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-navy-900 bg-amber-50 font-extrabold transition cursor-pointer';
+                    icon.classList.add('text-gold-600');
+                } else {
+                    panel.classList.add('hidden');
+                    btn.className = 'nav-tab-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-slate-500 font-semibold transition cursor-pointer';
+                    icon.classList.remove('text-gold-600');
+                }
+            }
+            if (scrollToTop) window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleFontSize() {
+            document.body.classList.toggle('large-font');
+            const isLarge = document.body.classList.contains('large-font');
+            document.getElementById('btn-font').textContent = isLarge ? 'A−' : 'A+';
+        }
+
+        function openInfographicModal() {
+            document.getElementById('infographic-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeInfographicModal() {
+            modalZoomed = false;
+            const img = document.getElementById('github-infographic-modal');
+            const btn = document.getElementById('btn-modal-zoom');
+            if (img) img.style.transform = 'scale(1)';
+            if (btn) btn.textContent = 'Zoom 1.4x';
+            document.getElementById('infographic-modal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        // Control y respaldo para el video local subido a GitHub
+        const DEFAULT_GH_VIDEO_URL = './WhatsApp%20Video%202026-11-21%20at%2019.27.44.mp4';
+
+        function handleVideoError() {
+            const fallback = document.getElementById('github-video-fallback');
+            if (fallback) {
+                fallback.classList.remove('hidden');
+            }
+        }
+
+        function applyCustomVideoUrl() {
+            const input = document.getElementById('custom-github-video-url');
+            const video = document.getElementById('github-whatsapp-video');
+            const source = document.getElementById('github-video-source');
+            const pathLabel = document.getElementById('active-video-path');
+            const fallback = document.getElementById('github-video-fallback');
+
+            if (!input || !video || !source) return;
+            const rawUrl = input.value.trim();
+            if (!rawUrl) return;
+
+            const encodedUrl = encodeURI(rawUrl);
+            source.src = encodedUrl;
+            video.load();
+            if (pathLabel) pathLabel.textContent = encodedUrl;
+            if (fallback) fallback.classList.add('hidden');
+        }
+
+        function resetDefaultVideoUrl() {
+            const video = document.getElementById('github-whatsapp-video');
+            const source = document.getElementById('github-video-source');
+            const pathLabel = document.getElementById('active-video-path');
+            const fallback = document.getElementById('github-video-fallback');
+            const input = document.getElementById('custom-github-video-url');
+
+            if (source && video) {
+                source.src = DEFAULT_GH_VIDEO_URL;
+                video.load();
+            }
+            if (pathLabel) pathLabel.textContent = DEFAULT_GH_VIDEO_URL;
+            if (input) input.value = '';
+            if (fallback) fallback.classList.add('hidden');
+        }
+
+        // Inicialización
+        window.addEventListener('DOMContentLoaded', () => {
+            restoreCourseData();
+            loadTheme();
+            renderNormsAccordion('all');
+            selectEvoPhase(0);
+            selectUnit(activeUnitId);
+            bindCourseForms();
+            updateClock();
+            window.setInterval(updateClock, 1000);
+        });
+    </script>
+</body>
+</html>

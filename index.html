@@ -834,9 +834,9 @@
                         <button class="filter-button rounded-full border border-slate-200 bg-white text-xs font-bold" data-filter="escrito" onclick="filterResources('escrito', this)">Escritos</button>
                         <button class="filter-button rounded-full border border-slate-200 bg-white text-xs font-bold" data-filter="info" onclick="filterResources('info', this)">Info</button>
                     </div>
-                    <p class="text-xs text-slate-500"><span id="resource-count">0</span> materiales disponibles</p>
+                    <p class="text-xs text-slate-500"><span id="resource-count">…</span> materiales disponibles</p>
                 </div>
-                <div id="resource-list" class="grid sm:grid-cols-2 xl:grid-cols-3 gap-3"></div>
+                <div id="resource-list" class="grid sm:grid-cols-2 xl:grid-cols-3 gap-3"><p class="text-sm text-slate-500">Sincronizando materiales desde las carpetas UC…</p></div>
             </section>
             <section id="module-content" class="hidden">
                 <button type="button" onclick="showResourceLibrary()" class="mb-4 text-sm font-bold text-[#0F2C59] hover:underline">← Volver a materiales</button>
@@ -1591,6 +1591,7 @@
                 id: 'delitos-economicos',
                 nombre: 'Delitos Económicos en el Ámbito de la Empresa',
                 nombreCorto: 'Delitos Económicos',
+                carpetaUC: 'DELITO ECONOMICOS EN EL AMBITO DE LA EMPRESA',
                 diasClase: 'Lunes',
                 profesor: 'Prof. Carlos Romero / Nueva Profesora',
                 horario: 'Lunes | 6:00 PM - 7:30 PM (2 Horas)',
@@ -1604,6 +1605,7 @@
                 id: 'proteccion-ambiente',
                 nombre: 'Protección Jurídica del Medio Ambiente',
                 nombreCorto: 'Medio Ambiente',
+                carpetaUC: 'PROTECCION JURIDICA DEL MEDIO AMBIENTE',
                 diasClase: 'Lunes',
                 profesor: 'Prof. Yesenia Azuaje',
                 horario: 'Lunes | 7:30 PM - 9:00 PM (2 Horas)',
@@ -1615,6 +1617,7 @@
                 id: 'resolucion-conflictos',
                 nombre: 'Resolución Judicial del Conflicto',
                 nombreCorto: 'Resolución del Conflicto',
+                carpetaUC: 'RESOLUCION JUDICIAL DEL CONFLICTO',
                 diasClase: 'Martes',
                 profesor: 'Prof. Julian Matute',
                 horario: 'Martes | 6:00 PM - 8:15 PM (3 Horas)',
@@ -1626,6 +1629,7 @@
                 id: 'proyecto-iv',
                 nombre: 'Proyecto IV: Justicia Comunitaria',
                 nombreCorto: 'Proyecto IV',
+                carpetaUC: 'PROYECTO IV JUSTICIA COMUNITARIA',
                 diasClase: 'Miércoles / Sábado',
                 profesor: 'Prof. Yajaira Prim',
                 horario: 'Miércoles (Teoría 2h: 6:00 PM - 7:30 PM) y Sábado (Práctica 6h: 7:30 AM - 12:00 PM)',
@@ -1639,6 +1643,7 @@
                 id: 'amparo-constitucional',
                 nombre: 'Amparo Constitucional',
                 nombreCorto: 'Amparo Constitucional',
+                carpetaUC: 'AMPARO CONSTITUCIONAL',
                 diasClase: 'Miércoles',
                 profesor: 'Prof. Eugenio Herrera',
                 horario: 'Miércoles | 7:30 PM - 9:00 PM (2 Horas)',
@@ -1650,6 +1655,7 @@
                 id: 'propiedad-derecho',
                 nombre: 'Propiedad y Derecho',
                 nombreCorto: 'Propiedad y Derecho',
+                carpetaUC: 'PROPIEDAD Y DERECHO',
                 diasClase: 'Jueves',
                 profesor: 'Prof. Luis Decimavilla',
                 horario: 'Jueves | 6:00 PM - 8:15 PM (3 Horas)',
@@ -1684,6 +1690,87 @@
             return Number.isNaN(date.getTime()) ? 'Sin fecha' : new Intl.DateTimeFormat('es-VE', { day: 'numeric', month: 'short', year: 'numeric' }).format(date);
         }
 
+        const githubRepository = 'zamso3000/4201_UBV';
+        const githubBranch = 'main';
+
+        function resourceFromGithubFile(file, unit) {
+            const extension = file.name.includes('.') ? file.name.split('.').pop().toLowerCase() : '';
+            const mediaExtensions = ['mp3', 'm4a', 'wav', 'ogg', 'mp4', 'webm'];
+            const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
+            const filePath = String(file.path || `UC/${unit.carpetaUC}/${file.name}`)
+                .split('/')
+                .map(encodeURIComponent)
+                .join('/');
+            const url = file.download_url || `https://raw.githubusercontent.com/${githubRepository}/${githubBranch}/${filePath}`;
+            const urlWithVersion = file.sha ? `${url}${url.includes('?') ? '&' : '?'}v=${encodeURIComponent(file.sha)}` : url;
+            const safeId = String(file.sha || `${unit.id}-${file.name}`).replace(/[^a-z0-9_-]/gi, '-');
+            const format = extension ? extension.toUpperCase() : 'archivo';
+
+            return {
+                id: `github-${safeId}`,
+                tipo: mediaExtensions.includes(extension) ? 'grabacion' : imageExtensions.includes(extension) ? 'info' : 'escrito',
+                titulo: file.name,
+                descripcion: `Archivo ${format} sincronizado desde la carpeta UC.`,
+                urlOContenido: urlWithVersion,
+                githubFile: true
+            };
+        }
+
+        async function syncCurricularUnitFiles() {
+            const apiRoot = `https://api.github.com/repos/${githubRepository}/contents/UC?ref=${githubBranch}`;
+
+            try {
+                const response = await fetch(apiRoot, {
+                    cache: 'no-store',
+                    headers: { Accept: 'application/vnd.github+json' }
+                });
+                if (!response.ok) throw new Error(`GitHub respondió ${response.status}.`);
+                const directories = await response.json();
+                if (!Array.isArray(directories)) throw new Error('GitHub devolvió un listado de carpetas inválido.');
+
+                const directoryByName = new Map(
+                    directories.filter(entry => entry.type === 'dir').map(entry => [entry.name.toLocaleLowerCase(), entry])
+                );
+                const results = await Promise.all(curricularUnits.map(async unit => {
+                    const directory = directoryByName.get(unit.carpetaUC.toLocaleLowerCase());
+                    if (!directory) return { unit, files: [] };
+
+                    try {
+                        const folderResponse = await fetch(directory.url, {
+                            cache: 'no-store',
+                            headers: { Accept: 'application/vnd.github+json' }
+                        });
+                        if (!folderResponse.ok) throw new Error(`GitHub respondió ${folderResponse.status}.`);
+                        const entries = await folderResponse.json();
+                        if (!Array.isArray(entries)) throw new Error('GitHub devolvió un listado de archivos inválido.');
+                        const files = entries
+                            .filter(entry => entry.type === 'file' && !entry.name.startsWith('.') && entry.name.toLowerCase() !== 'desktop.ini')
+                            .map(file => resourceFromGithubFile(file, unit));
+                        return { unit, files };
+                    } catch (error) {
+                        console.error(`No se pudo sincronizar UC/${unit.carpetaUC} desde GitHub.`, error);
+                        return { unit, error };
+                    }
+                }));
+
+                const failed = [];
+                results.forEach(result => {
+                    if (result.error) {
+                        failed.push(result.unit.carpetaUC);
+                        return;
+                    }
+                    result.unit.recursos = result.files;
+                    result.unit.remoteResourcesLoaded = true;
+                });
+                if (failed.length) {
+                    announce(`No se pudieron actualizar ${failed.length} carpeta(s) UC desde GitHub. Se mantienen los materiales anteriores.`);
+                }
+            } catch (error) {
+                console.error('No se pudieron sincronizar las carpetas UC desde GitHub.', error);
+                announce('No se pudieron actualizar los materiales desde GitHub. Revisa la conexión y vuelve a cargar la página.');
+            }
+        }
+
         function persistCourseData() {
             try {
                 const userData = curricularUnits.map(unit => ({
@@ -1707,7 +1794,10 @@
                     if (!unit) return;
                     if (Array.isArray(savedUnit.recursos)) savedUnit.recursos.forEach(resource => {
                         if (!resource || !resource.id || !resource.titulo) return;
-                        if (unit.id === 'delitos-economicos' && resource.id !== 'conceptos-delito-economico') return;
+                        if (unit.remoteResourcesLoaded && !resource.userAdded &&
+                            !unit.recursos.some(item => item.id === resource.id)) return;
+                        if (!unit.remoteResourcesLoaded && unit.id === 'delitos-economicos' &&
+                            resource.id !== 'conceptos-delito-economico' && !resource.userAdded) return;
                         const index = unit.recursos.findIndex(item => item.id === resource.id);
                         if (index < 0) unit.recursos.push(resource);
                         else unit.recursos[index] = { ...unit.recursos[index], ...resource };
@@ -1773,7 +1863,7 @@
                         </span>
                         <span class="mt-4 block font-bold text-sm text-slate-900">${escapeHTML(resource.titulo)}</span>
                         <span class="mt-1.5 block min-h-10 text-xs leading-relaxed text-slate-500">${escapeHTML(resource.descripcion || 'Material de la unidad curricular.')}</span>
-                        <span class="mt-4 flex items-center justify-between border-t border-slate-100 pt-3 text-[10px] text-slate-500"><span>Subido ${formatDate(resource.fechaSubida)}</span><span class="font-bold text-[#0F2C59]">Abrir →</span></span>
+                        <span class="mt-4 flex items-center justify-between border-t border-slate-100 pt-3 text-[10px] text-slate-500"><span>${resource.githubFile ? 'En carpeta UC' : `Subido ${formatDate(resource.fechaSubida)}`}</span><span class="font-bold text-[#0F2C59]">Abrir →</span></span>
                     </button>`).join('')
                 : '<div class="panel-card p-6 text-sm text-slate-500 sm:col-span-2 xl:col-span-3">No hay materiales en este filtro. Puedes agregar uno nuevo.</div>';
         }
@@ -1814,7 +1904,19 @@
         function getDocumentType(resourceUrl) {
             try {
                 const extension = new URL(resourceUrl, window.location.href).pathname.match(/\.([^.]+)$/)?.[1]?.toLowerCase();
-                return ({ pdf: 'pdf', docx: 'word', pptx: 'powerpoint' })[extension] || '';
+                return ({
+                    pdf: 'pdf',
+                    docx: 'word',
+                    pptx: 'powerpoint',
+                    jpg: 'image',
+                    jpeg: 'image',
+                    png: 'image',
+                    gif: 'image',
+                    webp: 'image',
+                    svg: 'image',
+                    mp4: 'video',
+                    webm: 'video'
+                })[extension] || '';
             } catch (error) {
                 console.error('No se pudo identificar el tipo de archivo.', error);
                 return '';
@@ -1888,11 +1990,15 @@
                 const documentType = getDocumentType(resource.urlOContenido || '');
                 if (documentType) document.body.classList.add('document-reading');
                 const documentUrl = hasRemoteUrl || hasLocalUrl ? escapeHTML(new URL(resource.urlOContenido, window.location.href).href) : '';
-                const audioPreview = resource.tipo === 'grabacion' && hasRemoteUrl
+                const audioPreview = resource.tipo === 'grabacion' && hasRemoteUrl && documentType !== 'video'
                     ? `<audio class="mt-4 w-full" controls preload="none" aria-label="Reproducir ${escapeHTML(resource.titulo)}"><source src="${escapeHTML(resource.urlOContenido)}"></audio>`
                     : '';
                 const documentPreview = documentType === 'pdf'
                     ? `<iframe class="document-preview-frame mt-4" src="${documentUrl}#toolbar=1" title="Vista previa de ${escapeHTML(resource.titulo)}"></iframe>`
+                    : documentType === 'image'
+                        ? `<img class="mt-4 w-full max-w-full object-contain" src="${documentUrl}" alt="Vista previa de ${escapeHTML(resource.titulo)}">`
+                        : documentType === 'video'
+                            ? `<video class="mt-4 w-full max-w-full" controls preload="metadata" aria-label="Reproducir ${escapeHTML(resource.titulo)}"><source src="${documentUrl}"></video>`
                     : documentType
                         ? '<div data-document-preview class="document-preview-host mt-4" aria-live="polite">Cargando vista previa del documento…</div>'
                         : '';
@@ -2669,15 +2775,16 @@
         }
 
         // Inicialización
-        window.addEventListener('DOMContentLoaded', () => {
-            restoreCourseData();
+        window.addEventListener('DOMContentLoaded', async () => {
             loadTheme();
             renderNormsAccordion('all');
             selectEvoPhase(0);
-            selectUnit(activeUnitId);
             bindCourseForms();
             updateClock();
             window.setInterval(updateClock, 1000);
+            await syncCurricularUnitFiles();
+            restoreCourseData();
+            selectUnit(activeUnitId);
         });
     </script>
 </body>

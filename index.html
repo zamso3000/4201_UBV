@@ -1414,6 +1414,7 @@
                 horario: 'Lunes | 6:00 PM - 7:30 PM (2 Horas)',
                 aula: 'CH7-D (Piso 7)',
                 recursos: [
+                    { id: 'conceptos-delito-economico', tipo: 'escrito', titulo: 'Conceptos varios', descripcion: 'Material sobre delincuencia, legitimación y asociación.', fechaSubida: '2026-11-21', urlOContenido: 'UC/DELITO ECONOMICOS EN EL AMBITO DE LA EMPRESA/Conceptos varios delin_legitimac_asosiac.docx' },
                     { id: 'marco-normativo', tipo: 'escrito', titulo: 'Marco normativo y conceptos', descripcion: 'LOCDOFT, Código Penal y recomendaciones GAFI.', fechaSubida: '2026-11-21', urlOContenido: 'tab-1', modulo: 1 },
                     { id: 'evolucion-delito', tipo: 'escrito', titulo: 'Evolución del delito en la empresa', descripcion: 'Desarrollo de las cuatro fases y su impacto empresarial.', fechaSubida: '2026-11-21', urlOContenido: 'tab-2', modulo: 2 },
                     { id: 'vinculo-conceptual', tipo: 'escrito', titulo: 'Vínculo conceptual y comparador', descripcion: 'Delincuencia organizada, asociación, legitimación y agavillamiento.', fechaSubida: '2026-11-21', urlOContenido: 'tab-3', modulo: 3 },
@@ -1454,12 +1455,14 @@
                 profesor: 'Prof. Yajaira Prim',
                 horario: 'Miércoles (Teoría 2h: 6:00 PM - 7:30 PM) y Sábado (Práctica 6h: 7:30 AM - 12:00 PM)',
                 aula: 'CH7-D / Comunidad',
-                recursos: [],
+                recursos: [
+                    { id: 'capitulos-proyecto-iv', tipo: 'escrito', titulo: 'Capítulos I, II y III', descripcion: 'Documento base del Proyecto IV: Justicia Comunitaria.', fechaSubida: '2026-11-21', urlOContenido: 'UC/PROYECTO IV JUSTICIA COMUNITARIA/CAPITULOS I, II Y III 4201N.pdf' }
+                ],
                 pendientes: []
             },
             {
                 id: 'amparo-constitucional',
-                nombre: 'Electiva: Amparo Constitucional',
+                nombre: 'Amparo Constitucional',
                 nombreCorto: 'Amparo Constitucional',
                 diasClase: 'Miércoles',
                 profesor: 'Prof. Eugenio Herrera',
@@ -1475,17 +1478,6 @@
                 diasClase: 'Jueves',
                 profesor: 'Prof. Luis Decimavilla',
                 horario: 'Jueves | 6:00 PM - 8:15 PM (3 Horas)',
-                aula: 'CH7-D (Piso 7)',
-                recursos: [],
-                pendientes: []
-            },
-            {
-                id: 'acompanamiento-comunitario',
-                nombre: 'Acompañamiento Socio-Comunitario',
-                nombreCorto: 'Acomp. Socio-Comunitario',
-                diasClase: 'Viernes',
-                profesor: 'Prof. Yldemaro Torres',
-                horario: 'Viernes | 6:00 PM - 7:30 PM (2 Horas)',
                 aula: 'CH7-D (Piso 7)',
                 recursos: [],
                 pendientes: []
@@ -1666,10 +1658,11 @@
                 document.querySelector('.old-module-nav').classList.add('hidden');
                 document.querySelectorAll('[id^="tab-"]').forEach(panel => panel.classList.add('hidden'));
                 const hasRemoteUrl = /^https?:\/\//i.test(resource.urlOContenido || '');
+                const hasLocalUrl = /^(?:\.\/|UC\/)/i.test(resource.urlOContenido || '');
                 const audioPreview = resource.tipo === 'grabacion' && hasRemoteUrl
                     ? `<audio class="mt-4 w-full" controls preload="none" aria-label="Reproducir ${escapeHTML(resource.titulo)}"><source src="${escapeHTML(resource.urlOContenido)}"></audio>`
                     : '';
-                const resourceLink = hasRemoteUrl && resource.tipo !== 'grabacion'
+                const resourceLink = (hasRemoteUrl || hasLocalUrl) && resource.tipo !== 'grabacion'
                     ? `<a class="mt-4 inline-flex min-h-11 items-center font-bold text-[#0F2C59] underline" href="${escapeHTML(resource.urlOContenido)}" target="_blank" rel="noopener noreferrer">Abrir recurso ↗</a>`
                     : '';
                 placeholder.innerHTML = `<article class="panel-card p-4"><p class="text-sm leading-relaxed text-slate-600">${escapeHTML(resource.descripcion || 'Agrega aquí la descripción de este material.')}</p>${audioPreview}${resourceLink}</article>`;

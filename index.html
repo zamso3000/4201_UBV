@@ -175,6 +175,29 @@
             border-radius: 18px;
             box-shadow: 0 2px 8px rgba(15, 23, 42, .035);
         }
+        .document-preview-frame {
+            display: block;
+            width: 100%;
+            min-height: min(78vh, 900px);
+            border: 0;
+            background: #e2e8f0;
+            border-radius: 14px;
+        }
+        .document-preview-host {
+            min-height: 360px;
+            max-height: 78vh;
+            overflow: auto;
+            padding: 16px;
+            border-radius: 14px;
+            background: #e2e8f0;
+        }
+        .pptx-slide-preview {
+            max-width: 100%;
+            margin: 0 auto 20px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 2px 10px rgba(15, 23, 42, .15);
+        }
         .resource-card {
             text-align: left;
             padding: 18px;
@@ -1414,14 +1437,7 @@
                 horario: 'Lunes | 6:00 PM - 7:30 PM (2 Horas)',
                 aula: 'CH7-D (Piso 7)',
                 recursos: [
-                    { id: 'conceptos-delito-economico', tipo: 'escrito', titulo: 'Conceptos varios', descripcion: 'Material sobre delincuencia, legitimación y asociación.', fechaSubida: '2026-11-21', urlOContenido: 'UC/DELITO ECONOMICOS EN EL AMBITO DE LA EMPRESA/Conceptos varios delin_legitimac_asosiac.docx' },
-                    { id: 'marco-normativo', tipo: 'escrito', titulo: 'Marco normativo y conceptos', descripcion: 'LOCDOFT, Código Penal y recomendaciones GAFI.', fechaSubida: '2026-11-21', urlOContenido: 'tab-1', modulo: 1 },
-                    { id: 'evolucion-delito', tipo: 'escrito', titulo: 'Evolución del delito en la empresa', descripcion: 'Desarrollo de las cuatro fases y su impacto empresarial.', fechaSubida: '2026-11-21', urlOContenido: 'tab-2', modulo: 2 },
-                    { id: 'vinculo-conceptual', tipo: 'escrito', titulo: 'Vínculo conceptual y comparador', descripcion: 'Delincuencia organizada, asociación, legitimación y agavillamiento.', fechaSubida: '2026-11-21', urlOContenido: 'tab-3', modulo: 3 },
-                    { id: 'financiamiento-terrorismo', tipo: 'info', titulo: 'Financiamiento al terrorismo', descripcion: 'Origen y destino de los fondos, actores y riesgos empresariales.', fechaSubida: '2026-11-21', urlOContenido: 'tab-4', modulo: 4 },
-                    { id: 'jurisprudencia-tsj', tipo: 'escrito', titulo: 'Jurisprudencia TSJ y materiales', descripcion: 'Análisis de sentencias, infografía oficial y recursos relacionados.', fechaSubida: '2026-11-21', urlOContenido: 'tab-5', modulo: 5 },
-                    { id: 'infografia-oficial', tipo: 'info', titulo: 'Infografía oficial', descripcion: 'Síntesis visual de los cinco ejes de la unidad curricular.', fechaSubida: '2026-11-21', urlOContenido: 'tab-5', modulo: 5, scrollTarget: 'github-infographic-main' },
-                    { id: 'grabacion-exposicion', tipo: 'grabacion', titulo: 'Material audiovisual relacionado', descripcion: 'Grabación vinculada con la exposición y el cumplimiento normativo.', fechaSubida: '2026-11-21', urlOContenido: 'tab-5', modulo: 5, scrollTarget: 'github-whatsapp-video' }
+                    { id: 'conceptos-delito-economico', tipo: 'escrito', titulo: 'Conceptos varios delin_legitimac_asosiac', descripcion: 'Documento de conceptos sobre delincuencia, legitimación y asociación.', fechaSubida: '2026-11-21', urlOContenido: 'UC/DELITO ECONOMICOS EN EL AMBITO DE LA EMPRESA/Conceptos varios delin_legitimac_asosiac.docx' }
                 ],
                 pendientes: []
             },
@@ -1532,6 +1548,7 @@
                     if (!unit) return;
                     if (Array.isArray(savedUnit.recursos)) savedUnit.recursos.forEach(resource => {
                         if (!resource || !resource.id || !resource.titulo) return;
+                        if (unit.id === 'delitos-economicos' && resource.id !== 'conceptos-delito-economico') return;
                         const index = unit.recursos.findIndex(item => item.id === resource.id);
                         if (index < 0) unit.recursos.push(resource);
                         else unit.recursos[index] = { ...unit.recursos[index], ...resource };
@@ -1634,6 +1651,54 @@
             renderResources();
         }
 
+        function getDocumentType(resourceUrl) {
+            try {
+                const extension = new URL(resourceUrl, window.location.href).pathname.match(/\.([^.]+)$/)?.[1]?.toLowerCase();
+                return ({ pdf: 'pdf', docx: 'word', pptx: 'powerpoint' })[extension] || '';
+            } catch (error) {
+                console.error('No se pudo identificar el tipo de archivo.', error);
+                return '';
+            }
+        }
+
+        function sanitizeOfficePreview(container) {
+            container.querySelectorAll('script, iframe, object, embed, form, base, meta, link').forEach(element => element.remove());
+            container.querySelectorAll('*').forEach(element => {
+                Array.from(element.attributes).forEach(attribute => {
+                    const name = attribute.name.toLowerCase();
+                    const value = attribute.value.trim();
+                    if (name.startsWith('on') || name === 'srcdoc' ||
+                        (['href', 'src', 'xlink:href'].includes(name) && /^(?:javascript|vbscript):|^data:text\/html/i.test(value)) ||
+                        (name === 'style' && /(?:expression\s*\(|url\s*\(\s*['"]?\s*javascript:)/i.test(value))) {
+                        element.removeAttribute(attribute.name);
+                    }
+                });
+            });
+        }
+
+        async function renderOfficeDocument(resource, documentType, host) {
+            try {
+                const response = await fetch(resource.urlOContenido);
+                if (!response.ok) throw new Error(`El servidor respondió ${response.status}.`);
+                const fileData = await response.arrayBuffer();
+                if (!host.isConnected) return;
+
+                if (documentType === 'word') {
+                    const renderer = await import('https://esm.sh/docx-preview@0.4.1');
+                    await renderer.renderAsync(fileData, host, host, { breakPages: true });
+                } else {
+                    const renderer = await import('https://esm.sh/@jvmr/pptx-to-html@1.1.2');
+                    const slides = await renderer.pptxToHtml(fileData, { width: 960, height: 540, scaleToFit: true, letterbox: true });
+                    if (!slides.length) throw new Error('La presentación no contiene diapositivas para mostrar.');
+                    host.innerHTML = slides.map(slide => `<div class="pptx-slide-preview">${slide}</div>`).join('');
+                }
+                sanitizeOfficePreview(host);
+            } catch (error) {
+                console.error(`No se pudo visualizar el archivo ${resource.urlOContenido}.`, error);
+                if (host.isConnected) host.textContent = `No se pudo generar la vista previa. Usa “Abrir archivo” para verlo o descargarlo. ${error.message}`;
+            }
+        }
+
         function openResource(resourceId) {
             const unit = getActiveUnit();
             const resource = unit.recursos.find(item => item.id === resourceId);
@@ -1659,13 +1724,23 @@
                 document.querySelectorAll('[id^="tab-"]').forEach(panel => panel.classList.add('hidden'));
                 const hasRemoteUrl = /^https?:\/\//i.test(resource.urlOContenido || '');
                 const hasLocalUrl = /^(?:\.\/|UC\/)/i.test(resource.urlOContenido || '');
+                const documentType = getDocumentType(resource.urlOContenido || '');
+                const documentUrl = hasRemoteUrl || hasLocalUrl ? escapeHTML(new URL(resource.urlOContenido, window.location.href).href) : '';
                 const audioPreview = resource.tipo === 'grabacion' && hasRemoteUrl
                     ? `<audio class="mt-4 w-full" controls preload="none" aria-label="Reproducir ${escapeHTML(resource.titulo)}"><source src="${escapeHTML(resource.urlOContenido)}"></audio>`
                     : '';
+                const documentPreview = documentType === 'pdf'
+                    ? `<iframe class="document-preview-frame mt-4" src="${documentUrl}#toolbar=1" title="Vista previa de ${escapeHTML(resource.titulo)}"></iframe>`
+                    : documentType
+                        ? '<div data-document-preview class="document-preview-host mt-4" aria-live="polite">Cargando vista previa del documento…</div>'
+                        : '';
                 const resourceLink = (hasRemoteUrl || hasLocalUrl) && resource.tipo !== 'grabacion'
-                    ? `<a class="mt-4 inline-flex min-h-11 items-center font-bold text-[#0F2C59] underline" href="${escapeHTML(resource.urlOContenido)}" target="_blank" rel="noopener noreferrer">Abrir recurso ↗</a>`
+                    ? `<a class="mt-4 inline-flex min-h-11 items-center font-bold text-[#0F2C59] underline" href="${documentUrl || escapeHTML(resource.urlOContenido)}" target="_blank" rel="noopener noreferrer">Abrir archivo ↗</a>`
                     : '';
-                placeholder.innerHTML = `<article class="panel-card p-4"><p class="text-sm leading-relaxed text-slate-600">${escapeHTML(resource.descripcion || 'Agrega aquí la descripción de este material.')}</p>${audioPreview}${resourceLink}</article>`;
+                placeholder.innerHTML = `<article class="panel-card p-4"><p class="text-sm leading-relaxed text-slate-600">${escapeHTML(resource.descripcion || 'Agrega aquí la descripción de este material.')}</p>${documentPreview}${audioPreview}${resourceLink}</article>`;
+                if (documentType === 'word' || documentType === 'powerpoint') {
+                    renderOfficeDocument(resource, documentType, placeholder.querySelector('[data-document-preview]'));
+                }
                 placeholder.classList.remove('hidden');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }

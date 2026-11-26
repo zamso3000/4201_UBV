@@ -632,6 +632,87 @@
             body { background: #e9edf3; }
             #app-shell, .workspace { width: 430px; }
         }
+        @media (max-width: 800px) {
+            body.document-reading .content-main {
+                padding: 6px 6px calc(96px + env(safe-area-inset-bottom));
+            }
+            body.document-reading #module-content {
+                width: 100%;
+                min-width: 0;
+            }
+            body.document-reading #module-content > button {
+                margin: 0 0 6px;
+            }
+            body.document-reading #module-context {
+                margin-bottom: 6px !important;
+            }
+            body.document-reading #module-context .course-heading {
+                padding: 8px 10px !important;
+                border-radius: 0;
+                box-shadow: none;
+            }
+            body.document-reading #module-placeholder > .panel-card {
+                padding: 0 !important;
+                border: 0;
+                border-radius: 0;
+                box-shadow: none;
+                background: transparent;
+            }
+            body.document-reading #module-placeholder > .panel-card > p:first-child {
+                margin: 0 0 8px;
+                padding: 0 10px;
+            }
+            body.document-reading .document-preview-frame {
+                width: 100%;
+                min-height: 75dvh;
+                margin: 0;
+                border: 0;
+                border-radius: 0;
+                background: transparent;
+            }
+            body.document-reading .document-preview-host {
+                width: 100%;
+                min-height: 75dvh;
+                max-height: none;
+                margin: 0;
+                padding: 0;
+                border: 0;
+                border-radius: 0;
+                background: transparent;
+                overflow: visible;
+            }
+            body.document-reading .document-preview-host .docx-wrapper {
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                gap: 0 !important;
+                align-items: stretch !important;
+                background: transparent !important;
+            }
+            body.document-reading .document-preview-host .docx-wrapper > section {
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 12px 10px !important;
+                border: 0 !important;
+                border-radius: 0 !important;
+                box-shadow: none !important;
+                background: transparent !important;
+            }
+            body.document-reading .document-preview-host img,
+            body.document-reading .pptx-slide-preview img {
+                width: 100% !important;
+                max-width: 100% !important;
+                height: auto !important;
+                margin: 0 !important;
+                border-radius: 0 !important;
+                object-fit: contain !important;
+            }
+            body.document-reading .pptx-slide-preview {
+                margin: 0 0 12px;
+                border-radius: 0;
+                box-shadow: none;
+            }
+        }
     </style>
 </head>
 <body class="font-sans text-slate-800 antialiased selection:bg-navy-900 selection:text-white overflow-x-hidden max-w-full">
@@ -1676,6 +1757,7 @@
             document.getElementById('course-dashboard').classList.remove('hidden');
             document.getElementById('module-content').classList.add('hidden');
             document.body.classList.remove('module-open');
+            document.body.classList.remove('document-reading');
             document.querySelector('.old-module-nav').classList.add('hidden');
             document.querySelectorAll('[id^="tab-"]').forEach(panel => panel.classList.add('hidden'));
             renderUnitList();
@@ -1745,6 +1827,7 @@
             const resource = unit.recursos.find(item => item.id === resourceId);
             if (!resource) return;
             activeResourceId = resource.id;
+            document.body.classList.remove('document-reading');
             document.getElementById('course-dashboard').classList.add('hidden');
             document.getElementById('module-content').classList.remove('hidden');
             document.body.classList.toggle('module-open', unit.id === curricularUnits[0].id && Boolean(resource.modulo));
@@ -1766,6 +1849,7 @@
                 const hasRemoteUrl = /^https?:\/\//i.test(resource.urlOContenido || '');
                 const hasLocalUrl = /^(?:\.\/|UC\/)/i.test(resource.urlOContenido || '');
                 const documentType = getDocumentType(resource.urlOContenido || '');
+                if (documentType) document.body.classList.add('document-reading');
                 const documentUrl = hasRemoteUrl || hasLocalUrl ? escapeHTML(new URL(resource.urlOContenido, window.location.href).href) : '';
                 const audioPreview = resource.tipo === 'grabacion' && hasRemoteUrl
                     ? `<audio class="mt-4 w-full" controls preload="none" aria-label="Reproducir ${escapeHTML(resource.titulo)}"><source src="${escapeHTML(resource.urlOContenido)}"></audio>`
@@ -1791,6 +1875,7 @@
 
         function showResourceLibrary() {
             document.body.classList.remove('module-open');
+            document.body.classList.remove('document-reading');
             document.querySelector('.old-module-nav').classList.add('hidden');
             document.getElementById('module-content').classList.add('hidden');
             document.getElementById('course-dashboard').classList.remove('hidden');

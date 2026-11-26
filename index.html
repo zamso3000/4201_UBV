@@ -206,6 +206,134 @@
             border-radius: 14px;
             box-sizing: border-box;
         }
+        .pdf-reader-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 8px;
+            border: 1px solid #cbd5e1;
+            background: #fff;
+        }
+        .pdf-reader-toolbar button {
+            min-height: 40px;
+            padding: 8px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            color: #0f172a;
+            background: #f8fafc;
+            font-size: 13px;
+            font-weight: 700;
+        }
+        .pdf-reader-toolbar button:disabled {
+            cursor: not-allowed;
+            opacity: .5;
+        }
+        .pdf-reader-status {
+            min-width: 100px;
+            color: #334155;
+            font-size: 13px;
+            font-weight: 700;
+            text-align: center;
+        }
+        .pdf-reader-page {
+            display: flex;
+            min-height: 60vh;
+            justify-content: center;
+            overflow: auto;
+            padding: 12px;
+            background: #e2e8f0;
+        }
+        .pdf-reader-canvas {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            background: #fff;
+            box-shadow: 0 2px 12px rgba(15, 23, 42, .16);
+        }
+        .spreadsheet-reader-toolbar,
+        .spreadsheet-sheet-tabs {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 8px;
+            border: 1px solid #cbd5e1;
+            background: #fff;
+        }
+        .spreadsheet-reader-toolbar {
+            justify-content: center;
+        }
+        .spreadsheet-sheet-tabs {
+            border-top: 0;
+        }
+        .spreadsheet-reader-toolbar button,
+        .spreadsheet-sheet-tab {
+            min-height: 40px;
+            padding: 8px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            color: #0f172a;
+            background: #f8fafc;
+            font-size: 13px;
+            font-weight: 700;
+        }
+        .spreadsheet-reader-toolbar button:disabled {
+            cursor: not-allowed;
+            opacity: .5;
+        }
+        .spreadsheet-sheet-tab[aria-selected="true"] {
+            border-color: #0f2c59;
+            color: #fff;
+            background: #0f2c59;
+        }
+        .spreadsheet-reader-status {
+            min-width: 130px;
+            color: #334155;
+            font-size: 13px;
+            font-weight: 700;
+            text-align: center;
+        }
+        .spreadsheet-table-container {
+            max-height: 72vh;
+            overflow: auto;
+            border: 1px solid #cbd5e1;
+            background: #fff;
+        }
+        .spreadsheet-table {
+            width: max-content;
+            min-width: 100%;
+            border-collapse: collapse;
+            color: #0f172a;
+            font-size: 13px;
+        }
+        .spreadsheet-table th,
+        .spreadsheet-table td {
+            min-width: 72px;
+            max-width: 320px;
+            padding: 7px 9px;
+            border: 1px solid #cbd5e1;
+            text-align: left;
+            vertical-align: top;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+        .spreadsheet-table thead th,
+        .spreadsheet-table tbody th {
+            position: sticky;
+            z-index: 1;
+            background: #f1f5f9;
+            font-weight: 700;
+        }
+        .spreadsheet-table thead th {
+            top: 0;
+        }
+        .spreadsheet-table tbody th {
+            left: 0;
+            min-width: 48px;
+            text-align: right;
+        }
         .document-preview-host {
             width: 100%;
             min-height: 360px;
@@ -657,6 +785,53 @@
             color: #e2e8f0;
             background: #0b1120;
         }
+        body.dark.document-reading .pdf-reader-toolbar {
+            border-color: #334155;
+            background: #151e2e;
+        }
+        body.dark.document-reading .pdf-reader-toolbar button {
+            border-color: #475569;
+            color: #f1f5f9;
+            background: #1e293b;
+        }
+        body.dark.document-reading .pdf-reader-status {
+            color: #e2e8f0;
+        }
+        body.dark.document-reading .spreadsheet-reader-toolbar,
+        body.dark.document-reading .spreadsheet-sheet-tabs {
+            border-color: #334155;
+            background: #151e2e;
+        }
+        body.dark.document-reading .spreadsheet-reader-toolbar button,
+        body.dark.document-reading .spreadsheet-sheet-tab {
+            border-color: #475569;
+            color: #f1f5f9;
+            background: #1e293b;
+        }
+        body.dark.document-reading .spreadsheet-sheet-tab[aria-selected="true"] {
+            border-color: #60a5fa;
+            color: #fff;
+            background: #1d4ed8;
+        }
+        body.dark.document-reading .spreadsheet-reader-status {
+            color: #e2e8f0;
+        }
+        body.dark.document-reading .spreadsheet-table-container {
+            border-color: #334155;
+            background: #0b1120;
+        }
+        body.dark.document-reading .spreadsheet-table {
+            color: #e2e8f0;
+        }
+        body.dark.document-reading .spreadsheet-table th,
+        body.dark.document-reading .spreadsheet-table td {
+            border-color: #334155;
+        }
+        body.dark.document-reading .spreadsheet-table thead th,
+        body.dark.document-reading .spreadsheet-table tbody th {
+            color: #e2e8f0;
+            background: #1e293b;
+        }
         body.dark.document-reading .document-preview-host .docx-wrapper > section {
             color: #e2e8f0 !important;
             background: #0b1120 !important;
@@ -717,6 +892,10 @@
                 border-radius: 0;
                 background: transparent;
                 overflow: visible;
+            }
+            body.document-reading .pdf-reader-page {
+                min-height: 75dvh;
+                padding: 8px 0;
             }
             body.document-reading .document-preview-host .docx-wrapper {
                 width: 100% !important;
@@ -1908,6 +2087,10 @@
                     pdf: 'pdf',
                     docx: 'word',
                     pptx: 'powerpoint',
+                    xlsx: 'spreadsheet',
+                    xls: 'spreadsheet',
+                    xlsm: 'spreadsheet',
+                    xlsb: 'spreadsheet',
                     jpg: 'image',
                     jpeg: 'image',
                     png: 'image',
@@ -1961,6 +2144,259 @@
             }
         }
 
+        async function renderPdfDocument(resource, host) {
+            const status = host.querySelector('[data-pdf-status]');
+            const pageContainer = host.querySelector('[data-pdf-page]');
+            const errorMessage = host.querySelector('[data-pdf-error]');
+            const canvas = host.querySelector('[data-pdf-canvas]');
+            const previousButton = host.querySelector('[data-pdf-previous]');
+            const nextButton = host.querySelector('[data-pdf-next]');
+
+            function showError(error) {
+                console.error(`No se pudo visualizar el archivo ${resource.urlOContenido}.`, error);
+                if (!host.isConnected) return;
+                status.textContent = 'No se pudo mostrar el PDF.';
+                pageContainer.classList.add('hidden');
+                errorMessage.textContent = 'Usa “Abrir archivo” para ver o descargar el documento.';
+                errorMessage.classList.remove('hidden');
+                previousButton.disabled = true;
+                nextButton.disabled = true;
+            }
+
+            try {
+                const response = await fetch(resource.urlOContenido);
+                if (!response.ok) throw new Error(`El servidor respondió ${response.status}.`);
+                const fileData = await response.arrayBuffer();
+                if (!host.isConnected) return;
+
+                const pdfjs = await import('https://esm.sh/pdfjs-dist@4.10.38/build/pdf.mjs');
+                pdfjs.GlobalWorkerOptions.workerSrc = 'https://esm.sh/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs';
+                const pdf = await pdfjs.getDocument({ data: new Uint8Array(fileData) }).promise;
+                if (!host.isConnected) return;
+
+                let pageNumber = 1;
+                let renderTask;
+                let lastWidth = host.clientWidth;
+
+                async function renderPage() {
+                    if (!host.isConnected) return;
+                    if (renderTask) renderTask.cancel();
+                    const page = await pdf.getPage(pageNumber);
+                    if (!host.isConnected) return;
+                    const unscaledViewport = page.getViewport({ scale: 1 });
+                    const scale = Math.min(host.clientWidth / unscaledViewport.width, 2);
+                    const viewport = page.getViewport({ scale });
+                    const pixelRatio = window.devicePixelRatio || 1;
+                    const context = canvas.getContext('2d', { alpha: false });
+                    if (!context) throw new Error('El navegador no pudo preparar el lienzo del PDF.');
+
+                    canvas.width = Math.floor(viewport.width * pixelRatio);
+                    canvas.height = Math.floor(viewport.height * pixelRatio);
+                    canvas.style.width = `${Math.floor(viewport.width)}px`;
+                    canvas.style.height = `${Math.floor(viewport.height)}px`;
+                    context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+                    context.fillStyle = '#fff';
+                    context.fillRect(0, 0, viewport.width, viewport.height);
+                    renderTask = page.render({ canvasContext: context, viewport });
+                    try {
+                        await renderTask.promise;
+                    } catch (error) {
+                        if (error.name !== 'RenderingCancelledException') throw error;
+                    }
+                    status.textContent = `Página ${pageNumber} de ${pdf.numPages}`;
+                    previousButton.disabled = pageNumber <= 1;
+                    nextButton.disabled = pageNumber >= pdf.numPages;
+                }
+
+                previousButton.disabled = true;
+                nextButton.disabled = true;
+                previousButton.addEventListener('click', () => {
+                    if (pageNumber > 1) {
+                        pageNumber -= 1;
+                        renderPage().catch(showError);
+                    }
+                });
+                nextButton.addEventListener('click', () => {
+                    if (pageNumber < pdf.numPages) {
+                        pageNumber += 1;
+                        renderPage().catch(showError);
+                    }
+                });
+
+                await renderPage();
+                if (window.ResizeObserver) {
+                    const resizeObserver = new ResizeObserver(() => {
+                        if (!host.isConnected) {
+                            resizeObserver.disconnect();
+                            return;
+                        }
+                        if (host.clientWidth !== lastWidth) {
+                            lastWidth = host.clientWidth;
+                            renderPage().catch(showError);
+                        }
+                    });
+                    resizeObserver.observe(host);
+                }
+            } catch (error) {
+                showError(error);
+            }
+        }
+
+        async function renderSpreadsheetDocument(resource, host) {
+            try {
+                const response = await fetch(resource.urlOContenido);
+                if (!response.ok) throw new Error(`El servidor respondió ${response.status}.`);
+                const fileData = await response.arrayBuffer();
+                if (!host.isConnected) return;
+
+                const XLSX = await import('https://cdn.sheetjs.com/xlsx-0.20.3/package/xlsx.mjs');
+                const workbook = XLSX.read(fileData, { type: 'array', cellDates: true, cellStyles: true });
+                if (!workbook.SheetNames.length) throw new Error('El libro no contiene hojas para mostrar.');
+
+                host.innerHTML = `
+                    <div class="spreadsheet-reader-toolbar">
+                        <button type="button" data-sheet-previous disabled>← Filas anteriores</button>
+                        <span class="spreadsheet-reader-status" data-sheet-status role="status" aria-live="polite"></span>
+                        <button type="button" data-sheet-next disabled>Siguientes filas →</button>
+                    </div>
+                    <div class="spreadsheet-sheet-tabs" data-sheet-tabs role="tablist" aria-label="Hojas del libro"></div>
+                    <div class="spreadsheet-table-container" data-sheet-table role="region" aria-label="Contenido de la hoja de cálculo"></div>`;
+
+                const tabs = host.querySelector('[data-sheet-tabs]');
+                const tableContainer = host.querySelector('[data-sheet-table]');
+                const status = host.querySelector('[data-sheet-status]');
+                const previousButton = host.querySelector('[data-sheet-previous]');
+                const nextButton = host.querySelector('[data-sheet-next]');
+                const rowsPerPage = 100;
+                let activeSheetName = workbook.SheetNames[0];
+                let pageIndex = 0;
+
+                function renderSheet() {
+                    if (!host.isConnected) return;
+                    const sheet = workbook.Sheets[activeSheetName];
+                    const range = sheet && sheet['!ref'] ? XLSX.utils.decode_range(sheet['!ref']) : null;
+                    if (!range) {
+                        tableContainer.innerHTML = '<p class="p-4 text-sm">Esta hoja está vacía.</p>';
+                        status.textContent = `${activeSheetName} · Hoja vacía`;
+                        previousButton.disabled = true;
+                        nextButton.disabled = true;
+                        return;
+                    }
+
+                    const rowCount = range.e.r - range.s.r + 1;
+                    const pageCount = Math.ceil(rowCount / rowsPerPage);
+                    pageIndex = Math.min(pageIndex, pageCount - 1);
+                    const firstRow = range.s.r + pageIndex * rowsPerPage;
+                    const lastRow = Math.min(range.e.r, firstRow + rowsPerPage - 1);
+                    const mergeStarts = new Map();
+                    const mergedCells = new Set();
+                    (sheet['!merges'] || []).forEach(merge => {
+                        if (merge.s.r < firstRow || merge.e.r > lastRow) return;
+                        const startKey = `${merge.s.r},${merge.s.c}`;
+                        mergeStarts.set(startKey, merge);
+                        for (let row = merge.s.r; row <= merge.e.r; row += 1) {
+                            for (let column = merge.s.c; column <= merge.e.c; column += 1) {
+                                if (row !== merge.s.r || column !== merge.s.c) {
+                                    mergedCells.add(`${row},${column}`);
+                                }
+                            }
+                        }
+                    });
+                    const table = document.createElement('table');
+                    table.className = 'spreadsheet-table';
+                    const head = document.createElement('thead');
+                    const headerRow = document.createElement('tr');
+                    const rowHeader = document.createElement('th');
+                    rowHeader.scope = 'col';
+                    rowHeader.textContent = 'Fila';
+                    headerRow.appendChild(rowHeader);
+
+                    for (let column = range.s.c; column <= range.e.c; column += 1) {
+                        const header = document.createElement('th');
+                        header.scope = 'col';
+                        header.textContent = XLSX.utils.encode_col(column);
+                        headerRow.appendChild(header);
+                    }
+                    head.appendChild(headerRow);
+                    table.appendChild(head);
+
+                    const body = document.createElement('tbody');
+                    for (let row = firstRow; row <= lastRow; row += 1) {
+                        const tableRow = document.createElement('tr');
+                        const number = document.createElement('th');
+                        number.scope = 'row';
+                        number.textContent = String(row + 1);
+                        tableRow.appendChild(number);
+                        for (let column = range.s.c; column <= range.e.c; column += 1) {
+                            const key = `${row},${column}`;
+                            if (mergedCells.has(key)) continue;
+                            const cell = sheet[XLSX.utils.encode_cell({ r: row, c: column })];
+                            const tableCell = document.createElement('td');
+                            tableCell.textContent = cell ? XLSX.utils.format_cell(cell) : '';
+                            const merge = mergeStarts.get(key);
+                            if (merge) {
+                                tableCell.rowSpan = merge.e.r - merge.s.r + 1;
+                                tableCell.colSpan = merge.e.c - merge.s.c + 1;
+                            }
+                            const style = cell && cell.s;
+                            const fillColor = style && style.patternType === 'solid' &&
+                                (style.fgColor && style.fgColor.rgb || style.bgColor && style.bgColor.rgb);
+                            if (fillColor && /^(?:[0-9a-f]{6}|[0-9a-f]{8})$/i.test(fillColor)) {
+                                tableCell.style.backgroundColor = `#${fillColor.slice(-6)}`;
+                            }
+                            const fontColor = style && style.font && style.font.color && style.font.color.rgb;
+                            if (fontColor && /^(?:[0-9a-f]{6}|[0-9a-f]{8})$/i.test(fontColor)) {
+                                tableCell.style.color = `#${fontColor.slice(-6)}`;
+                            }
+                            if (style && style.font && style.font.bold) tableCell.style.fontWeight = '700';
+                            if (style && style.font && style.font.italic) tableCell.style.fontStyle = 'italic';
+                            tableRow.appendChild(tableCell);
+                        }
+                        body.appendChild(tableRow);
+                    }
+                    table.appendChild(body);
+                    tableContainer.replaceChildren(table);
+                    status.textContent = `${activeSheetName} · Filas ${firstRow + 1}–${lastRow + 1} de ${range.e.r + 1}`;
+                    previousButton.disabled = pageIndex === 0;
+                    nextButton.disabled = pageIndex >= pageCount - 1;
+                }
+
+                workbook.SheetNames.forEach((sheetName, index) => {
+                    const tab = document.createElement('button');
+                    tab.type = 'button';
+                    tab.className = 'spreadsheet-sheet-tab';
+                    tab.setAttribute('role', 'tab');
+                    tab.setAttribute('aria-selected', String(index === 0));
+                    tab.textContent = sheetName;
+                    tab.addEventListener('click', () => {
+                        activeSheetName = sheetName;
+                        pageIndex = 0;
+                        tabs.querySelectorAll('[role="tab"]').forEach(item => {
+                            item.setAttribute('aria-selected', String(item === tab));
+                        });
+                        renderSheet();
+                    });
+                    tabs.appendChild(tab);
+                });
+                previousButton.addEventListener('click', () => {
+                    if (pageIndex > 0) {
+                        pageIndex -= 1;
+                        renderSheet();
+                    }
+                });
+                nextButton.addEventListener('click', () => {
+                    pageIndex += 1;
+                    renderSheet();
+                });
+                renderSheet();
+            } catch (error) {
+                console.error(`No se pudo visualizar la hoja de cálculo ${resource.urlOContenido}.`, error);
+                if (host.isConnected) {
+                    host.textContent = `No se pudo generar la vista previa. Usa “Abrir archivo” para verlo o descargarlo. ${error.message}`;
+                }
+            }
+        }
+
         function openResource(resourceId) {
             const unit = getActiveUnit();
             const resource = unit.recursos.find(item => item.id === resourceId);
@@ -1994,7 +2430,15 @@
                     ? `<audio class="mt-4 w-full" controls preload="none" aria-label="Reproducir ${escapeHTML(resource.titulo)}"><source src="${escapeHTML(resource.urlOContenido)}"></audio>`
                     : '';
                 const documentPreview = documentType === 'pdf'
-                    ? `<iframe class="document-preview-frame mt-4" src="${documentUrl}#toolbar=1" title="Vista previa de ${escapeHTML(resource.titulo)}"></iframe>`
+                    ? `<section data-pdf-reader class="document-preview-host pdf-reader mt-4" aria-label="Lector de PDF">
+                        <div class="pdf-reader-toolbar">
+                            <button type="button" data-pdf-previous disabled>← Anterior</button>
+                            <span class="pdf-reader-status" data-pdf-status role="status" aria-live="polite">Cargando PDF…</span>
+                            <button type="button" data-pdf-next disabled>Siguiente →</button>
+                        </div>
+                        <div class="pdf-reader-page" data-pdf-page><canvas class="pdf-reader-canvas" data-pdf-canvas aria-label="Página del documento PDF"></canvas></div>
+                        <p class="hidden px-3 py-4 text-center text-sm font-semibold text-red-700" data-pdf-error role="alert"></p>
+                    </section>`
                     : documentType === 'image'
                         ? `<img class="mt-4 w-full max-w-full object-contain" src="${documentUrl}" alt="Vista previa de ${escapeHTML(resource.titulo)}">`
                         : documentType === 'video'
@@ -2008,6 +2452,12 @@
                 placeholder.innerHTML = `<article class="panel-card p-4"><p class="text-sm leading-relaxed text-slate-600">${escapeHTML(resource.descripcion || 'Agrega aquí la descripción de este material.')}</p>${documentPreview}${audioPreview}${resourceLink}</article>`;
                 if (documentType === 'word' || documentType === 'powerpoint') {
                     renderOfficeDocument(resource, documentType, placeholder.querySelector('[data-document-preview]'));
+                }
+                if (documentType === 'pdf') {
+                    renderPdfDocument(resource, placeholder.querySelector('[data-pdf-reader]'));
+                }
+                if (documentType === 'spreadsheet') {
+                    renderSpreadsheetDocument(resource, placeholder.querySelector('[data-document-preview]'));
                 }
                 placeholder.classList.remove('hidden');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
